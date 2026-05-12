@@ -12,31 +12,54 @@
     /* background: url('../images/00/bg1.png') center bottom no-repeat; */
 }
 
+/* .contents:nth-child(2) {
+    background: url('../images/00/bg2.png') center bottom no-repeat;
+} */
+
 /* contents:nth-child(1) -------------------------------------------------------------*/
 .player-buttons {
-    margin-bottom: 10px;
     display: flex;
     justify-content: center;
-    gap: 60px;
+    gap: 359px;
+    position: relative;
+    top: 44px;
+    z-index: 2;
 }
 
 .p-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #333;
-    background: #fff;
+    width: 290px;
+    height: 142px;
+    background: rgba(0, 0, 0, 0.4);
     cursor: pointer;
-    font-weight: bold;
-}
-
-.p-btn:hover {
-    background: #eee;
 }
 
 /* 선택된 버튼 강조 */
 .p-btn.active {
-    background: #FF5722;
-    color: white;
-    border-color: #FF5722;
+    
+}
+
+.canvas-wrapper canvas{
+    /* border: 1px solid red; */
+    position: absolute;
+    top: 140px;
+    left: 256px;
+}
+
+
+.contents:nth-child(1) .clickItem {
+    width: 290px;
+    height: 142px;
+    position: absolute;
+    top: 691px;
+    left: 165px;
+}
+.contents:nth-child(1) .clickItem2{
+    left: 1463px;
+}
+.contents:nth-child(1) .clickItem3{
+    left: 814px;
+}
+
+.contents:nth-child(1) .clickContent .ansbtn{
+    display: none !important;
 }
