@@ -16,32 +16,39 @@
 .game-container {
     text-align: center;
     font-family: sans-serif;
+    padding: 20px;
 }
 
-#ladderBoard {
+.canvas-wrapper {
     position: relative;
-    margin: 20px auto;
-    border: 2px solid #333;
-    background: #f9f9f9;
+    display: inline-block;
+    margin-top: 20px;
 }
 
 canvas {
-    display: block;
+    border: 2px solid #333;
+    background: #f9f9f9;
+    cursor: crosshair;
 }
 
 .controls {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
-input {
-    padding: 5px;
-    width: 50px;
+.hint {
+    color: #666;
+    font-size: 0.9em;
 }
 
 button {
-    padding: 5px 15px;
+    padding: 8px 15px;
     cursor: pointer;
     background: #4CAF50;
     color: white;
     border: none;
+    border-radius: 4px;
+}
+
+button:hover {
+    background: #45a049;
 }
