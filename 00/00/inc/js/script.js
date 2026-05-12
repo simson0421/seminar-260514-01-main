@@ -7,7 +7,6 @@ function contentScript(_idx, _content) {
             const canvas = document.getElementById('ladderCanvas');
             const ctx = canvas.getContext('2d');
             
-            // --- 설정 데이터 ---
             const playerCount = 5;
             const ladderData = [
                 { section: 0, height: 0.2 }, { section: 1, height: 0.35 },
@@ -20,19 +19,19 @@ function contentScript(_idx, _content) {
             const colWidth = 100;
             const canvasHeight = 600;
             const innerHeight = canvasHeight - (padding * 2);
-            let isGaming = false;
+            const colors = ['#E91E63', '#9C27B0', '#2196F3', '#4CAF50', '#FFC107'];
 
             canvas.width = (playerCount - 1) * colWidth + padding * 2;
             canvas.height = canvasHeight;
 
-            // 경로 색상 리스트
-            const colors = ['#FF5722', '#4CAF50', '#2196F3', '#9C27B0', '#FFC107'];
-
             function drawBoard() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = '#ddd';
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // 1. 기본 배경 사다리 (가장 뒤)
+                ctx.strokeStyle = '#eee';
                 ctx.lineWidth = 2;
-                // 세로선 및 가로선 그리기 (생략 가능 - 이전 코드와 동일)
                 for (let i = 0; i < playerCount; i++) {
                     const x = padding + i * colWidth;
                     ctx.beginPath(); ctx.moveTo(x, padding); ctx.lineTo(x, canvas.height - padding); ctx.stroke();
@@ -44,28 +43,14 @@ function contentScript(_idx, _content) {
                 });
             }
 
-            // 모든 경로를 순차적으로 계산하여 그리는 함수
-            async function drawAllPaths() {
-                isGaming = true;
-                const promises = [];
-                
-                for (let i = 0; i < playerCount; i++) {
-                    // 각 경로가 서로 겹쳐도 보이게 투명도 조절
-                    promises.push(startLadder(i, colors[i % colors.length] + 'BB'));
-                }
-                
-                await Promise.all(promises);
-                isGaming = false;
-            }
-
-            async function startLadder(startIdx, color) {
+            // 경로 계산 함수 (좌표 배열 반환)
+            function getPath(startIdx) {
                 let curIdx = startIdx;
                 let curY = padding;
+                const path = [{x: curIdx * colWidth + padding, y: curY}];
                 const sortedLines = [...ladderData].sort((a, b) => a.height - b.height);
 
                 while (curY < canvasHeight - padding) {
-                    if(!isGaming) return;
-
                     const nextBridge = sortedLines.find(line => 
                         line.height * innerHeight + padding > curY + 1 && 
                         (line.section === curIdx || line.section === curIdx - 1)
@@ -73,56 +58,58 @@ function contentScript(_idx, _content) {
 
                     if (nextBridge) {
                         const bridgeY = nextBridge.height * innerHeight + padding;
-                        await animate(curIdx * colWidth + padding, curY, curIdx * colWidth + padding, bridgeY, color);
-                        curY = bridgeY;
-                        const nextX = (nextBridge.section === curIdx) ? (curIdx + 1) * colWidth + padding : (curIdx - 1) * colWidth + padding;
-                        await animate(curIdx * colWidth + padding, curY, nextX, curY, color);
+                        path.push({x: curIdx * colWidth + padding, y: bridgeY});
                         curIdx = (nextBridge.section === curIdx) ? curIdx + 1 : curIdx - 1;
+                        path.push({x: curIdx * colWidth + padding, y: bridgeY});
+                        curY = bridgeY;
                     } else {
-                        await animate(curIdx * colWidth + padding, curY, curIdx * colWidth + padding, canvasHeight - padding, color);
+                        path.push({x: curIdx * colWidth + padding, y: canvasHeight - padding});
                         curY = canvasHeight - padding;
                     }
                 }
+                return path;
             }
 
-            function animate(x1, y1, x2, y2, color) {
-                return new Promise(resolve => {
-                    let curX = x1, curY = y1;
-                    const step = () => {
-                        if(!isGaming) return;
-                        ctx.beginPath();
-                        ctx.strokeStyle = color;
-                        ctx.lineWidth = 4;
-                        ctx.moveTo(curX, curY);
-                        if (x1 !== x2) curX += (x2 > x1 ? 10 : -10);
-                        if (y1 !== y2) curY += 10;
-                        
-                        if (Math.abs(curX - x2) <= 10 && Math.abs(curY - y2) <= 10) {
-                            ctx.lineTo(x2, y2); ctx.stroke();
-                            resolve();
-                        } else {
-                            ctx.lineTo(curX, curY); ctx.stroke();
-                            requestAnimationFrame(step);
-                        }
-                    };
-                    step();
-                });
+            // 경로 그리기 (z-index 효과를 위해 두께와 스타일 조절)
+            function drawPathLine(path, color, isHighlight = false) {
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = isHighlight ? 6 : 4; // 강조된 선은 더 굵게
+                ctx.moveTo(path[0].x, path[0].y);
+                path.forEach(pt => ctx.lineTo(pt.x, pt.y));
+                ctx.stroke();
             }
 
-            // 토글 버튼 이벤트
+            // 개별 선택 버튼 생성
+            const $btnWrapper = $('#playerButtons').empty();
+            for(let i=0; i<playerCount; i++) {
+                $('<button>').addClass('p-btn').text(i+1)
+                    .on('click', function() {
+                        $('.p-btn').removeClass('active');
+                        $(this).addClass('active');
+                        drawBoard();
+                        const path = getPath(i);
+                        drawPathLine(path, colors[i % colors.length], true);
+                    })
+                    .appendTo($btnWrapper);
+            }
+
+            // [토글 버튼] 이벤트
             $('#toggleBtn').on('click', function() {
                 const status = $(this).data('status');
 
                 if (status === 'ready') {
-                    // 확인하기 클릭 시
-                    $(this).text('다시 하기').data('status', 'reset').prop('disabled', true);
-                    drawAllPaths().then(() => {
-                        $('#toggleBtn').prop('disabled', false);
-                    });
+                    // 즉시 전체 결과 보여주기
+                    $(this).text('다시 하기').data('status', 'reset');
+                    drawBoard();
+                    // 순서대로 그려서 나중에 그린 선이 위로 오게 함 (z-index 효과)
+                    for (let i = 0; i < playerCount; i++) {
+                        drawPathLine(getPath(i), colors[i % colors.length] + 'CC'); 
+                    }
                 } else {
-                    // 다시하기 클릭 시
-                    isGaming = false;
+                    // 초기화
                     $(this).text('전체 결과 확인').data('status', 'ready');
+                    $('.p-btn').removeClass('active');
                     drawBoard();
                 }
             });

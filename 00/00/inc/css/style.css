@@ -17,6 +17,7 @@
     margin-bottom: 10px;
     display: flex;
     justify-content: center;
+    gap: 60px;
 }
 
 .p-btn {
@@ -26,18 +27,16 @@
     border: 2px solid #333;
     background: #fff;
     cursor: pointer;
-    margin: 0 30px;
-    /* 간격은 JS에서 조정 */
     font-weight: bold;
-    transition: 0.3s;
 }
 
 .p-btn:hover {
-    background: #4A90E2;
-    color: white;
+    background: #eee;
 }
 
-canvas {
-    background: #fdfdfd;
-    border-top: 5px solid #333;
+/* 선택된 버튼 강조 */
+.p-btn.active {
+    background: #FF5722;
+    color: white;
+    border-color: #FF5722;
 }
