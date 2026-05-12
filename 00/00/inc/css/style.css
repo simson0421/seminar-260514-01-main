@@ -1,0 +1,14 @@
+.tt {
+    /* background: url(../images/00/tt1.png) 0 0 no-repeat !important; */
+}
+
+/*  */
+.setContent {}
+
+.setContent li {}
+
+/* contents */
+.contents:nth-child(1) {
+    /* background: url('../images/00/bg1.png') center bottom no-repeat; */
+}
+/* contents:nth-child(1) -------------------------------------------------------------*/

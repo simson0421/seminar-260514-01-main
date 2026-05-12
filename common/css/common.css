@@ -1,0 +1,3551 @@
+/* @charset "utf-8";
+
+@import url(../../common/css/reset.css);
+@import url(../../common/fonts/fonts.css);
+@import url(../../common/css/animate.css);
+@import url(../../common/css/scrollBar.css);
+@import url(../../common/css/jquery.mCustomScrollbar.css); */
+@import url(../../common/css/audioContents.css);
+
+/* 기본, 과목 공통 기능, 과목 개별 기능, 기타 */
+
+/* =========================================================================================
+ * 기본
+ * ====================================================================================== */
+/* ---------------------------------------
+ * *
+ * --------------------------------------- */
+
+/* jQuery v3.2 이상 에서만 조작 가능 */
+/* https://wit.nts-corp.com/2017/06/27/4731 */
+/* https://inpa.tistory.com/entry/CSS-📚-CSS용-변수-variable-정리 */
+/* $(':root').css({ '--common-path': 'yellow' }); */
+/* h1 { var(--common-path); } */
+:root {
+    --common-path: '../../common/';
+    --bg-color: #fff;
+    --light-gray: #efefef;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    border: 0;
+    margin: 0;
+
+    font-family: "KoPubDotum";
+    /* color: #000; */
+
+    /*
+    2024-07-24 19:48:41 - JGY: 웹 크롬에서 이미지가 흐릿하게 보이면서 선명하지 않은 것 보정
+    @see https://abcdqbbq.tistory.com/100
+    */
+    image-rendering: -webkit-optimize-contrast;
+
+    /* https://stackoverflow.com/questions/15464055/css-transition-effect-makes-image-blurry-moves-image-1px-in-chrome */
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: none;
+    backface-visibility: hidden;
+
+    image-rendering: -webkit-optimize-contrast;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    /* -webkit-transform: translateZ(0) scale(1, 1) translate3d(0,0,0);
+    transform: translateZ(0) scale(1, 1) translate3d(0,0,0); */
+
+
+    /** 2023-10-17 09:41:25 - JGY : ios를 제외한 나머지 환경에서 이미지가 뿌옇게 흐려져서 적용 취소 */
+    /* -webkit-transform: translateZ(0) scale(1, 1) translate3d(0,0,0);
+    transform: translateZ(0) scale(1, 1) translate3d(0,0,0); */
+    /**----------*/
+
+    -webkit-tap-highlight-color: transparent;
+
+    -webkit-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    -o-text-size-adjust: none;
+    text-size-adjust: none;
+
+    /* -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none; */
+}
+
+/* 터치를 사용한 스크롤, 핀치 줌만 허용하고 그 외 비표준 동작 (더블 탭으로 확대 등) 불허용 */
+* {
+    touch-action: manipulation;
+}
+
+
+*:focus {
+    outline: none;
+}
+
+/* i */
+i {
+    font-style: normal;
+    text-align: center;
+    font-size: 40px;
+}
+
+i.off {
+    display: none;
+}
+
+/* ---------------------------------------
+ * screen
+ * --------------------------------------- */
+html {
+    width: 100%;
+    height: 100%;
+    /* overflow: hidden; */
+    overflow: auto;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    /* background: rgba(0, 0, 0, 0); */
+    overflow: hidden !important;
+    background: #fff;
+}
+
+button {
+    border: 0;
+}
+
+/* container */
+#container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-position: center;
+    position: relative;
+    background-size: 100%;
+    visibility: hidden;
+    background: none;
+    /* background: url('../images/bg2.png') no-repeat; */
+}
+
+#container.intro {
+    /* background: url('../images/bg1.png') no-repeat; */
+    background-position: center;
+}
+
+/* wrap */
+#wrap {
+    /* background-color: rgba(0, 0, 0, 1) !important; */
+    background-color: rgba(255, 255, 255, 1) !important;
+    background-position: center;
+    width: 1920px;
+    height: 1020px;
+    position: absolute;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    /* 최초에 감춤 */
+    visibility: hidden;
+    overflow: visible;
+}
+
+#wrap.intro {
+    /* background: url('../images/bg1.png') no-repeat; */
+    background-position: center;
+}
+
+#wrap [overflow-type="visible"] {
+    /* overflow: visible !important; */
+}
+
+/* ---------------------------------------
+ * contents
+ * --------------------------------------- */
+.contentsWrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.contents {
+    display: none;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    /* overflow: hidden; */
+}
+
+/* optionPage */
+.contents.clickPage {
+    background-color: var(--bg-color) !important;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* ---------------------------------------
+ * setContent(상단 contents 전환 버튼)
+ * --------------------------------------- */
+.setContent {
+    position: absolute;
+    top: 82px;
+    right: 53px;
+}
+
+.setContent li {
+    width: 144px;
+    height: 50px;
+    position: relative;
+    margin-right: 8px;
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    font-size: 30px;
+    line-height: 1;
+    color: transparent;
+    text-indent: -99999px;
+}
+
+.test2 .setContent li {
+    color: #111;
+    text-indent: 0px;
+}
+
+
+.setContent li.on {
+    pointer-events: none;
+}
+
+.setContent li:last-child {
+    margin-right: 0px;
+}
+
+.setContent::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+/* ---------------------------------------
+ * btns
+ * --------------------------------------- */
+button {
+    backface-visibility: hidden;
+    overflow: visible;
+    cursor: pointer;
+    outline: none;
+    outline: 0;
+    background: 0 0;
+    border: none;
+}
+
+/* ansbtn */
+/* 확인하기 */
+.ansbtn {
+    background: url('../images/clickitem/ansbtn.png') 0 0 no-repeat;
+    width: 233px;
+    height: 71px;
+    position: absolute;
+    top: 932px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.quiz .ansbtn {
+    background: url('../images/clickitem/ansbtn2.png') 0 0 no-repeat;
+}
+
+.ansbtn2 {
+    background: url('../images/clickitem/ansbtn2.png') 0 0 no-repeat;
+    width: 233px;
+    height: 71px;
+    position: absolute;
+    top: 913px;
+    left: 1630px;
+    cursor: pointer;
+}
+
+/* 다시하기 */
+.ansbtn.re {
+    background: url('../images/clickitem/rebtn.png') 0 0 no-repeat !important;
+}
+
+.popup .ansbtn {
+    top: 888px;
+    left: 1585px;
+}
+
+/* 예시보기 */
+.exbtn {
+    /* background: url('../images/clickitem/btn_openEx.png') 0 0 no-repeat; */
+    /* width: 212px; */
+    /* height: 61px; */
+    /* position: absolute; */
+    /* top: 934px; */
+    /* left: 1457px; */
+    /* cursor: pointer; */
+}
+
+.exWrap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    z-index: 99999;
+}
+
+.exWrap .close {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    top: 109px;
+    right: 62px;
+    cursor: pointer;
+}
+
+/* =========================================================================================
+ * 과목 공통 기능
+ * ====================================================================================== */
+/* ---------------------------------------
+ * pageingContents
+ * --------------------------------------- */
+/* pageWrap, pages, page */
+.pageWrap,
+.pageWrap .pages,
+.pageWrap .page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* overflow: hidden; */
+}
+
+.pageWrap {
+    overflow: hidden;
+}
+
+/* page */
+.pageWrap .page {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.pageWrap .page:nth-child(1) {
+    display: block;
+}
+
+/* pages transition move */
+.pageWrap.moving .pages {
+    overflow: visible;
+}
+
+.pageWrap.moving .page {
+    display: block !important;
+}
+
+.pageWrap.moving.x {
+    width: 1920px;
+}
+
+.pageWrap.moving.x .pages {
+    transition: left 0.2s ease-in-out;
+}
+
+.pageWrap.moving.y .pages {
+    transition: top 0.2s ease-in-out;
+}
+
+/* .pageWrap.moving.direct .pages {
+    transition-duration: 0s;
+} */
+
+/* navigation */
+.pageWrap .navigation {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.pageWrap .prev {
+    /* background: url('../images/naviitem/btn.png') no-repeat; */
+    background: none;
+    /* transform: rotate(180deg); */
+    width: 78px;
+    height: 140px;
+    position: absolute;
+    top: 436px;
+    left: 0px;
+    cursor: pointer;
+    /* 클릭영역 확대 */
+    /* transform: scaleX(1.2) scaleY(1.5);
+    transform-origin: left; */
+}
+
+.pageWrap .next {
+    /* background: url('../images/naviitem/btn.png') no-repeat; */
+    background: none;
+    /* transform: rotate(0deg); */
+    width: 78px;
+    height: 140px;
+    position: absolute;
+    top: 436px;
+    right: 0px;
+    cursor: pointer;
+    /* 클릭영역 확대 */
+    /* transform: scaleX(1.2) scaleY(1.5);
+    transform-origin: right; */
+}
+
+.pageWrap .prev.dis {
+    /* background: url('../images/naviitem/btn_dis.png') no-repeat;
+    transform: rotate(0deg);
+    cursor: auto; */
+}
+
+.pageWrap .next.dis {
+    /* background: url('../images/naviitem/btn_dis.png') no-repeat;
+    transform: rotate(180deg);
+    cursor: auto; */
+}
+
+.pageWrap .next.dis,
+.pageWrap .prev.dis {
+    display: none;
+    background: none;
+    /* pointer-events: none; */
+}
+
+/* pageing */
+.pageWrap .pageing {
+    /* background: #5fcbd6 url('../images/naviitem/navi.png') center no-repeat; */
+    height: 48px;
+    position: absolute;
+    top: 965px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: auto;
+    border-radius: 24px;
+    /* opacity: 0; */
+    padding: 6px 0 0 0;
+}
+
+.pageWrap .pageing:before {
+    /* content: '';
+    display: block;
+    background: url('../images/naviitem/navi.png') left no-repeat;
+    position: absolute;
+    width: 35px;
+    height: 55px;
+    left: -34px; */
+}
+
+.pageWrap .pageing:after {
+    /* content: '';
+    display: block;
+    background: url('../images/naviitem/navi.png') right no-repeat;
+    position: absolute;
+    width: 35px;
+    height: 55px;
+    right: -34px; */
+}
+
+.pageWrap .pageing:before,
+.pageWrap .pageing:after {
+    display: none;
+}
+
+.pageWrap .pageing .dot {
+    width: 32px;
+    height: 36px;
+    border-radius: 10px;
+    /* background: #fff; */
+    /* margin: 15px 16px; */
+    float: left;
+    margin-left: 16px;
+    cursor: pointer;
+}
+
+.pageWrap .pageing .dot.on {
+    /* background: #fbb03b; */
+    cursor: auto;
+}
+
+.pageWrap .pageing .dot:first-child {
+    margin-left: 28px;
+    /* margin-right: 14px; */
+}
+
+.pageWrap .pageing .dot:last-child {
+    margin-right: 28px;
+}
+
+.pageWrap .pageing .dot .text {
+    display: none;
+}
+
+.pageWrap .prev,
+.pageWrap .next,
+.pageWrap .pageing,
+.pageWrap .pageing .dot,
+.pageWrap .pageing .dot.on {
+    /* background: none; */
+}
+
+/* popup 내부 */
+.popup.pageWrap .prev,
+.popup .pageWrap .prev {
+    height: 130px;
+    left: 81px;
+    top: 444px;
+}
+
+.popup.pageWrap .next,
+.popup .pageWrap .next {
+    height: 130px;
+    right: 81px;
+    top: 444px;
+}
+
+.popup.pageWrap .pageing,
+.popup .pageWrap .pageing {
+    top: 935px;
+}
+
+.pageWrap .pageing .dot.on::after {
+    pointer-events: none;
+}
+
+/* ---------------------------------------
+ * tabContents
+ * --------------------------------------- */
+/* tabWrap, tabs, tab */
+.tabWrap,
+.tabWrap .tabs,
+.tabWrap .tab {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* overflow: hidden; */
+}
+
+.tabWrap {
+    overflow: hidden;
+}
+
+/* tab */
+.tabWrap .tab {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.tabWrap .tab:nth-child(1) {
+    display: block;
+}
+
+
+/* btnTab */
+.btnTabWrap {
+    position: absolute;
+    top: 153px;
+    right: 51px;
+}
+
+.btnTabWrap .btnTab {
+    float: left;
+    position: relative;
+    width: 186px;
+    height: 48px;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.btnTabWrap .btnTab.on {
+    pointer-events: none;
+}
+
+.btnTabWrap .btnTab:last-child {
+    margin-right: 0px;
+}
+
+.btnTabWrap .btnTab .text {
+    display: none;
+}
+
+.btnTabWrap::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+/* ---------------------------------------
+ * pop & popup
+ * --------------------------------------- */
+/* btns */
+.btnPop,
+.btnPopup {
+    width: 64px;
+    height: 64px;
+    position: absolute;
+    cursor: pointer;
+    /* z-index: 10; */
+}
+
+.btnPop.dis,
+.btnPopup.dis {
+    display: none !important;
+}
+
+.btnPop.on,
+.btnPopup.on {}
+
+/* pop */
+.pop {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    display: none;
+    z-index: 11;
+}
+
+.popup {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 12;
+}
+
+/*  */
+.pop .close {
+    position: absolute;
+    top: 19px;
+    right: 19px;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.popup .close {
+    position: absolute;
+    top: 58px;
+    right: 98px;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+/* dragPop */
+.pop[data-type="dragPop"] {
+    cursor: pointer;
+}
+
+.pop[data-type="dragPop"] .close {
+    top: 165px;
+    right: 27px;
+    width: 70px;
+    height: 70px;
+}
+
+/* ---------------------------------------
+ * clickContent
+ * --------------------------------------- */
+.clickContent {}
+
+.clickContent .clickItemWrap {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+/* clickItem */
+.clickContent .clickItem {
+    width: 1697px;
+    height: 98px;
+    position: absolute;
+    top: 244px;
+    left: 112px;
+    cursor: pointer;
+    border-radius: 16px;
+    background-color: #eaeaea;
+    opacity: 1;
+}
+.clickContent .connItem{
+    width: 1697px;
+    height: 98px;
+    position: absolute;
+    top: 244px;
+    left: 112px;
+    pointer-events: none;
+}
+
+.clickContent .clickItem {
+    /* background-color: #eaeaea; */
+}
+
+.clickContent .clickItem.on {
+    opacity: 0;
+}
+
+.clickContent .clickItem.off {
+    pointer-events: none;
+}
+
+.clickContent .clickItem:before {
+    display: block;
+    content: '';
+    width: 110px;
+    height: 115px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-47%, -47%);
+    background: url('../images/clickitem/clickitem.png') center center no-repeat;
+    pointer-events: none;
+}
+
+.quiz .clickContent .clickItem:before {
+    display: block;
+    content: '';
+    width: 100px;
+    height: 104px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-48%, -47%);
+    background: url('../images/clickitem/clickitem_s.png') center center no-repeat;
+}
+
+.quiz .clickContent.ox .clickItem.on{
+    pointer-events: none;
+}
+
+/* sequence */
+.clickContent.sequence .clickItem.on {
+    pointer-events: none;
+}
+
+.clickContent.sequence .clickItem:not(.act) {
+    pointer-events: none;
+}
+
+.clickContent.sequence .clickItem:not(.act):before {
+    content: none;
+}
+
+.clickContent.sequence .clickGuide:not(.act) {
+    display: none;
+    pointer-events: none;
+}
+
+.clickContent.sequence .clickItem.on {
+    pointer-events: auto;
+}
+
+.clickContent.sequence .clickItem:not(.act):before {
+    content: '';
+}
+
+/* guide */
+.clickGuide {
+    background: url('../images/clickitem/clickitem.png') 0 0 no-repeat;
+    left: 0px;
+    top: 0px;
+    position: absolute;
+    width: 73px;
+    height: 76px;
+    /* border-radius: 18px; */
+    /* background-color: #e6e6e4; */
+    pointer-events: none;
+}
+
+
+/* checkbox */
+.clickContent.checkbox .clickItem {
+    /* background: url('../images/clickitem/check_off.png') 0 0 no-repeat; */
+    width: 53px;
+    height: 46px;
+    opacity: 1 !important;
+    border-radius: 10px;
+    background-color: transparent;
+}
+
+.clickContent.checkbox .clickItem.on {
+    background: url('../images/clickitem/check.png') 0 0 no-repeat;
+}
+
+.clickContent.checkbox .clickItem:after {
+    content: '';
+    position: absolute;
+    display: none;
+    left: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.clickContent.checkbox .clickItem:before {
+    content: '';
+    position: absolute;
+    display: block;
+    background: none;
+    width: auto;
+    height: 90px;
+    left: 66px;
+    top: 50%;
+    margin: 0;
+    transform: translateY(-50%);
+}
+
+.clickContent.checkbox .ansbtn {
+    display: none;
+}
+
+/* OX */
+.clickContent.ox .clickItem {
+    opacity: 1 !important;
+}
+
+.clickContent.ox .clickItem::before {
+    content: none !important;
+}
+
+/* cho */
+.clickContent.cho .clickItem {
+    opacity: 1 !important;
+}
+
+.clickContent.cho .clickItem.on::before,
+.clickContent.cho .clickItem.cho::before {
+    content: none !important;
+}
+
+.clickContent.cho .clickItem.on::before,
+.clickContent.cho .clickItem.cho::before {
+    content: none !important;
+}
+
+.clickContent.cho .chobtn {
+    width: 233px;
+    height: 71px;
+    background: url('../images/clickitem/choBtn.png') 0 0 no-repeat;
+    position: absolute;
+    right: 267px;
+    top: 932px;
+    cursor: pointer;
+}
+
+.clickContent.cho .chobtn.off {
+    background: url('../images/clickitem/choBtn_off.png') 0 0 no-repeat;
+}
+
+/* ansbtn */
+.clickContent .ansbtn {}
+
+/* ---------------------------------------
+ * 드래그
+ * --------------------------------------- */
+/* dragContents */
+.dragContents {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+/* drag */
+.dragContents .dragArea {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.dragContents .dragItem {
+    cursor: pointer;
+    position: absolute;
+}
+
+.dragContents .dragItem p {
+    display: none;
+    font-size: 30px;
+    text-align: center;
+    line-height: 180px;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* drop */
+.dragContents .dropArea {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.dragContents .dropItem {
+    position: absolute;
+}
+
+.dragContents .dropItem .dragItem {
+    pointer-events: none;
+}
+
+/* ansbtn */
+.dragContents .ansbtn {}
+
+.dragContents .ansbtn.re {}
+
+.dragContents.sticker .ansbtn {
+    display: none;
+}
+
+.dragContents.sticker .ansbtn.re {
+    display: block;
+}
+
+/* ---------------------------------------
+ * 스크롤
+ * --------------------------------------- */
+/* scroll - custom */
+/* scrollbox */
+[data-type='customScroll'] {
+    width: 100%;
+    height: 835px;
+    position: absolute;
+    left: 0px;
+    top: 150px;
+    overflow-y: auto;
+}
+
+[data-type='customScroll'] .scrollpage {
+    width: 100%;
+    position: relative;
+    left: 0px;
+    top: 0px;
+}
+
+/* scroll - drag */
+/* scrollbox */
+[data-type='dragScroll'] {
+    position: absolute;
+}
+
+/* dragScroll */
+[data-type='dragScroll'] .dragScrollWrap {}
+
+[data-type='dragScroll'] .dragScroll {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+[data-type='dragScroll'] .dragScroll .bar {
+    background: rgba(255, 255, 255, 0.6);
+    position: absolute;
+    top: 0px;
+    left: 20px;
+    border-radius: 14px;
+    border: 2px solid rgba(62, 62, 162, 0.6);
+}
+
+[data-type='dragScroll'] .dragScroll .bar.evt {
+    cursor: pointer;
+}
+
+[data-type='dragScroll'] .dragScroll[data-axis="x"] .bar {
+    width: 300px;
+    height: 10px;
+}
+
+[data-type='dragScroll'] .dragScroll[data-axis="y"] .bar {
+    left: 20px;
+    top: 10px;
+    width: 10px;
+    height: 300px;
+}
+
+[data-type='dragScroll'] .dragScroll .jog {
+    background-size: 40px 40px;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 0px;
+    border-radius: 50%;
+    transform: translateY(-10px);
+    cursor: pointer;
+}
+
+[data-type='dragScroll'] .dragScroll[data-axis="x"] .jog {
+    background-image: url('../images/scrollitem/jog_x.png');
+    top: 0px;
+    left: 0px;
+    transform: translateY(-13px);
+}
+
+[data-type='dragScroll'] .dragScroll[data-axis="y"] .jog {
+    background-image: url('../images/scrollitem/jog_y.png');
+    top: 100px;
+    transform: translateX(5px);
+}
+
+/* ---------------------------------------
+ * 선긋기
+ * --------------------------------------- */
+.lineWrap {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+}
+
+.lineWrap .lineArea {
+    position: absolute;
+    width: 1920px;
+    height: 1020px;
+}
+
+.lineWrap .leftLine,
+.lineWrap .rightLine {
+    position: absolute;
+}
+
+.lineWrap .leftLine .clickArea .dot,
+.lineWrap .rightLine .r_item .dot,
+.lineWrap .leftLine .clickArea .dot,
+.lineWrap .rightLine .r_item .dot {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+
+.lineWrap .leftLine .dot::before,
+.lineWrap .rightLine .dot::before {
+    content: '';
+    position: absolute;
+    display: block;
+    background: #F66E9E;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+/* ---------------------------------------
+ * 줌
+ * --------------------------------------- */
+/* zoomWrap */
+.zoomWrap {
+    width: 1596px;
+    height: 949px;
+    position: absolute;
+    top: 49px;
+    left: 173px;
+}
+
+.zoomWrap {
+    /*
+    width: 1590px;
+    height: 950px;
+    */
+    width: 1146px;
+    height: 726px;
+    position: absolute;
+    top: 207px;
+    left: 387px;
+    /* border: 3px solid #c1c1c1; */
+    /* border-radius: 20px; */
+}
+
+/* zoombtn */
+.zoomWrap .zoombtn {
+    width: 159px;
+    height: 301px;
+    position: fixed;
+    top: 245px;
+    left: 53px;
+    z-index: 15;
+    background: transparent;
+}
+
+.zoomWrap .zoombtn div {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    height: 75px;
+    left: 0px;
+}
+
+.zoomWrap .zoombtn .btn.plus {
+    background: url(../images/clickitem/zoomplus.png) 0 0 no-repeat;
+    top: 0px;
+    cursor: pointer;
+}
+
+.zoomWrap .zoombtn .btn.minus {
+    background: url(../images/clickitem/zoomminus.png) 0 0 no-repeat;
+    top: 92px;
+    cursor: pointer;
+}
+
+.zoomWrap .zoombtn .text {
+    top: 97px;
+    left: 14px;
+    width: 58px;
+    height: 40px;
+    border-radius: 6px;
+    line-height: 42px;
+    font-size: 18px;
+    color: #000;
+    user-select: none;
+    display: none;
+}
+
+/* zoombox */
+.zoomWrap .zoombox {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.zoomWrap .zoombox .zoomImgbox {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: scale(1.0) translate(-50%, -50%);
+    user-select: none;
+}
+
+.zoomWrap .zoombox .zoomImg {
+    width: 100%;
+    height: 100%;
+    transform: scale(1.0) translate(0px, 0px);
+    transition: transform 0.2s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    user-select: none;
+}
+
+.zoomWrap .zoombox {
+    background: #fff 0 0 no-repeat;
+    border-radius: 20px;
+}
+
+/* ---------------------------------------
+ * 줌2
+ * --------------------------------------- */
+.contents.zoomPage {}
+
+.mapZoom .map {
+    background: transparent center center no-repeat;
+    background-size: 100%;
+}
+
+.mapZoom .map .innerbtn {
+    width: 80px;
+    height: 50px;
+    display: none;
+    position: absolute;
+    top: 510px;
+    left: 330px;
+    cursor: pointer;
+}
+
+/* 확대축소영역­ */
+.mapWrap {
+    position: absolute;
+    top: 195px;
+    left: 126px;
+}
+
+/* '※ 손가락 버튼을 클릭하세요.' 문구있을시 */
+.mapWrap.tp2 {
+    top: 143px;
+}
+
+/* 줌버튼 */
+/* .mapWrap .mapbtn {
+     background: url(../images/mapitem/mapcontrol.png) center center no-repeat;
+     width: 77px;
+     height: 227px;
+     position: absolute;
+     top: 0px;
+     left: 0px;
+ } */
+
+.mapWrap .mapbtn {
+    background: url(../images/mapitem/mapcontrol_page.png) center center no-repeat;
+    width: 76px;
+    height: 237px;
+    position: absolute;
+    top: 1px;
+    left: 1689px;
+}
+
+.mapWrap .mapbtn div {
+    width: 100%;
+    height: 77px;
+    user-select: none;
+    text-align: center;
+    /* line-height: 77px; */
+    line-height: 89px;
+    color: #000;
+    font-size: 20px;
+}
+
+.mapWrap .mapbtn .btn {
+    cursor: pointer;
+}
+
+.mapWrap .mapbox {
+    background: #fff;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    border-radius: 0px;
+    overflow: hidden;
+    border: none;
+}
+
+.mapWrap .mapbox .map {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(1.0) translate(0px, 0px);
+    transition: transform 0.2s ease-in-out;
+}
+
+/* ---------------------------------------
+ * 오디오
+ * --------------------------------------- */
+audio {
+    display: none;
+}
+
+/* ---------------------------------------
+ * 비디오
+ * --------------------------------------- */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button {
+    border: 0;
+}
+
+.videoFrame * {
+    font-weight: normal;
+    text-align: left;
+    font-size: 0;
+    line-height: 1;
+}
+
+.videoFrame {
+    position: absolute;
+    z-index: 3;
+    width: 1164px;
+    height: 722px;
+    display: block;
+    top: 159px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+/* 제목 1줄 */
+.videoFrame.line1 {
+    top: 206px;
+    transform: translateX(-50%) scale(1.11);
+}
+
+/* 제목 2줄 */
+.videoFrame.line2 {
+    top: 256px;
+    transform: translateX(-50%) scale(0.98);
+}
+
+.videoFrame .vdo-wrap video {
+    width: 100%;
+    position: absolute;
+}
+
+.videoFrame .vdo-wrap .play {
+    /*    background: url(images/video/playbtn_big.png) 0 0 no-repeat;*/
+    background: url(../images/video/playbtn_big.png) 0 0 no-repeat;
+    /*
+    width: 164px;
+    height: 164px;
+*/
+    width: 140px;
+    height: 140px;
+    position: absolute;
+    /*
+    top: calc(50% - 122px);
+    left: calc(50% - 82px);
+*/
+    top: calc(50% - 102px);
+    left: calc(50% - 72px);
+    cursor: pointer;
+    z-index: 2;
+}
+
+.videoFrame .control-wrap {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 67px;
+    z-index: 1;
+    background: #707578;
+}
+
+.videoFrame .control-wrap>* {
+    position: absolute;
+}
+
+.videoFrame .control-wrap .p-con {
+    top: 3px;
+    left: 19px;
+}
+
+.videoFrame .control-wrap .p-con button {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 62px;
+    height: 62px;
+    ;
+    cursor: pointer;
+}
+
+.videoFrame .control-wrap .p-con .play {
+    background: url(../images/video/play_btn.png) 0 0 no-repeat;
+    background-size: 100%;
+}
+
+.videoFrame .control-wrap .p-con .pause {
+    background: url(../images/video/pause.png) 0 0 no-repeat;
+    background-size: 100%;
+    width: 45px;
+    height: 52px;
+    display: none;
+    top: 2px;
+    left: 7px;
+}
+
+.videoFrame .control-wrap .stop {
+    top: 9px;
+    left: 95px;
+    background: url(../images/video/stop.png) 0 0 no-repeat;
+    background-size: 100%;
+    width: 49px;
+    height: 50px;
+    cursor: pointer;
+}
+
+.videoFrame .control-wrap .stop:before {
+    /* content: ''; */
+    display: block;
+    height: 66px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #fff;
+    position: absolute;
+    top: -14px;
+    left: -27px;
+    opacity: 0.2;
+}
+
+.videoFrame .control-wrap .c-con {
+    left: 177px;
+    top: 12px;
+    width: calc(100% - 646px);
+}
+
+.videoFrame .control-wrap .c-con:before {
+    content: '';
+    display: block;
+    height: 51px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #fff;
+    position: absolute;
+    top: -4px;
+    left: -14px;
+    opacity: 0.2;
+}
+
+.videoFrame .control-wrap .c-con .progress {
+    position: absolute;
+    top: 19px;
+    left: 19px;
+    width: calc(100% - 120px);
+    height: 5px;
+    background-color: #5C5E5E;
+    cursor: pointer;
+    border-radius: 25px;
+}
+
+.videoFrame .control-wrap.novtt .c-con .progress {
+    width: 390px;
+}
+
+
+.videoFrame .control-wrap .c-con .progress span {
+    height: 100%;
+    background: #9BE8CA;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    border-radius: 25px;
+}
+
+.videoFrame .control-wrap .c-con .progress span:before {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 55px;
+    height: 55px;
+    /*    background: url(images/video/jog.png) 0 0 no-repeat;*/
+    background: url(../images/video/jog.png) 0 0 no-repeat;
+    top: -25px;
+    right: -31px;
+}
+
+.videoFrame .control-wrap .c-con .time {
+    position: absolute;
+    top: 14px;
+    right: -20px;
+    width: 97px;
+}
+
+.videoFrame .control-wrap.novtt .c-con .time {
+    left: 610px;
+}
+
+.videoFrame .control-wrap .c-con .time .currentTime {
+    color: #FFE674;
+    font-size: 15px;
+    float: left;
+    font-weight: bold;
+}
+
+.videoFrame .control-wrap .c-con .time .totalTime {
+    color: #fff;
+    font-size: 15px;
+    float: right;
+    font-weight: bold;
+}
+
+.videoFrame .control-wrap .c-con .time .totalTime:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -1px;
+    left: 47px;
+    width: 2px;
+    height: 15px;
+    background: #fff;
+}
+
+.videoFrame .control-wrap .s-con {
+    top: 5px;
+    right: 238px;
+}
+
+.videoFrame .s-con:before {
+    content: '';
+    display: block;
+    height: 51px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #fff;
+    position: absolute;
+    top: 4px;
+    left: -3px;
+    opacity: 0.2;
+}
+
+.videoFrame .control-wrap.novtt .s-con {
+    left: 830px;
+}
+
+.videoFrame .control-wrap .s-con .s_icon {
+    /*    background:url(images/video/sound.png) 0 0 no-repeat;*/
+    background: url(../images/video/sound.png) 0 0 no-repeat;
+    width: 62px;
+    height: 62px;
+    position: relative;
+    background-size: 100%;
+    cursor: pointer;
+}
+
+.videoFrame .control-wrap .s-con .s_icon.mute {
+    /* width: 38px; */
+    /* height: 31px; */
+    /* margin-top: 0px; */
+    background: url(../images/video/mute.png) 0 0 no-repeat;
+    background-size: 100%;
+}
+
+.videoFrame .control-wrap .s-con .sound {
+    position: absolute;
+    top: 26px;
+    left: 69px;
+    width: 116px;
+    height: 5px;
+    background-color: #5C5E5E;
+    cursor: pointer;
+    border-radius: 25px;
+}
+
+.videoFrame .control-wrap .s-con .sound span {
+    width: 50%;
+    height: 100%;
+    background: #9BE8CA;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    border-radius: 25px;
+}
+
+.videoFrame .control-wrap .s-con .sound span:before {
+    display: block;
+    content: '';
+    position: absolute;
+    width: 31px;
+    height: 62px;
+    background: url(../images/video/s_jog.png) 0 0 no-repeat;
+    top: -25px;
+    right: -20px;
+    background-size: 100%;
+}
+
+.videoFrame .control-wrap .script {
+    top: 20px;
+    left: 826px;
+    width: 100px;
+    height: 33px;
+    cursor: pointer;
+    border: 3px solid #fff;
+    box-sizing: content-box;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    text-indent: 30px;
+    display: none;
+}
+
+.videoFrame .control-wrap .f-con {
+    top: 6px;
+    right: 15px;
+}
+
+.videoFrame .control-wrap .f-con:before {
+    content: '';
+    display: block;
+    height: 51px;
+    border-left: 2px solid #00002D;
+    border-right: 2px solid #fff;
+    position: absolute;
+    top: 2px;
+    left: -20px;
+    opacity: 0.2;
+}
+
+.videoFrame .control-wrap .f_icon {
+    width: 61px;
+    height: 62px;
+    background: url(../images/video/full.png) 0 0 no-repeat;
+    background-size: 100%;
+}
+
+.videoFrame .control-wrap .f_icon.on {
+    width: 68px;
+    height: 68px;
+    background: url(../images/video/full_on.png) 0 0 no-repeat;
+    margin-top: -5px;
+}
+
+.videoFrame .control-wrap .f_icon.close {
+    width: 28px;
+    height: 28px;
+    background: url(../images/video/close.png) 0 0 no-repeat;
+}
+
+.videoFrame .control-wrap .script .icon {
+    background: url(../images/video/script.png) -8px -8px no-repeat;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 2px;
+    left: 5px;
+}
+
+/*0626 수정*/
+.videoFrame {
+    /*background: #fff;*/
+}
+
+.videoFrame .control-wrap .script-wrap {
+    width: 1280px;
+    height: 54px;
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    line-height: 54px;
+}
+
+/*배속 추가*/
+
+.videoFrame .r-con {
+    top: 17px;
+    right: 403px;
+    display: block;
+}
+
+.videoFrame .r-con:before {
+    content: '';
+    display: block;
+    height: 51px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #FFF;
+    position: absolute;
+    top: -7px;
+    left: -21px;
+    opacity: 0.2;
+}
+
+.videoFrame .r-con .r-btn {
+    width: 79px;
+    height: 30px;
+    cursor: pointer;
+    box-sizing: content-box;
+    border-radius: 20px;
+    color: #4D4D4D;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: left;
+    line-height: 32px;
+    background: #9BE8CA;
+    position: absolute;
+    text-indent: 33px;
+}
+
+.videoFrame .r-con .r-btn:before {
+    position: absolute;
+    content: '';
+    display: block;
+    width: 24px;
+    height: 26px;
+    background: url(../images/video/rate_item.png) center center no-repeat;
+    top: 3px;
+    left: 3px;
+}
+
+.videoFrame .r-con .r-box {
+    position: absolute;
+    top: -274px;
+    left: -21px;
+    width: 128px;
+    height: 254px;
+    background: url(../images/video/ratebg.png) center center no-repeat;
+    padding: 11px 15px;
+    display: none;
+    z-index: 2;
+}
+
+.videoFrame .r-con .r-box:before {
+    content: '배속 선택';
+    display: block;
+    clear: both;
+    position: absolute;
+    color: #fff;
+    font-size: 23px;
+    width: 98px;
+    text-align: center;
+}
+
+.videoFrame .r-box div {
+    width: 86px;
+    height: 27px;
+    cursor: pointer;
+    box-sizing: content-box;
+    border-radius: 20px;
+    color: #333;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: left;
+    line-height: 30px;
+    background: #cbcbcb;
+    position: relative;
+    text-indent: 36px;
+    margin-top: 10px;
+    margin-left: 2px;
+}
+
+.videoFrame .r-box div:before {
+    position: absolute;
+    content: '';
+    display: block;
+    width: 24px;
+    height: 26px;
+    background: url(../images/video/rate_item.png) center center no-repeat;
+    top: 1px;
+    left: 2px;
+}
+
+.videoFrame .r-box div.on {
+    background: #9BE8CA;
+}
+
+.videoFrame .r-box div:first-child {
+    margin-left: 4;
+    margin-top: 37px;
+}
+
+
+:fullscreen {
+    width: 100% !important;
+    height: 100% !important;
+    background: none !important;
+}
+
+:-webkit-full-screen {
+    width: 100% !important;
+    height: 100% !important;
+    background: none !important;
+}
+
+:-ms-fullscreen {
+    width: 100% !important;
+    height: 100% !important;
+    background: none !important;
+}
+
+:-ms-fullscreen.videoFrame {
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+}
+
+:fullscreen.videoFrame {
+    width: 100%;
+    height: 100% !important;
+    position: relative;
+}
+
+:-webkit-full-screen.videoFrame {
+    width: 100%;
+    height: 100% !important;
+    position: relative;
+}
+
+:-ms-fullscreen.videoFrame {
+    width: 100%;
+    height: 100% !important;
+    position: relative;
+}
+
+:fullscreen.videoFrame video {
+    height: 100% !important;
+    /*height: calc(100% - 76px) !important;*/
+}
+
+:-webkit-full-screen.videoFrame video {
+    height: 100% !important;
+    /*height: calc(100% - 76px) !important;*/
+}
+
+:-ms-fullscreen.videoFrame video {
+    height: 100% !important;
+    /*height: calc(100% - 76px) !important;*/
+}
+
+.videoFrame .control-wrap .c-con {
+    left: 247px;
+    top: 12px;
+    width: calc(100% - 716px);
+}
+
+.videoFrame .control-wrap .replay {
+    top: 1px;
+    left: 155px;
+    background: url(../images/video/role.png) 0 0 no-repeat;
+    background-size: 100%;
+    width: 62px;
+    height: 68px;
+    cursor: pointer;
+}
+
+.videoFrame .control-wrap .replay.on {
+    background: url(../images/video/role_on.png) 0 0 no-repeat;
+    background-size: 100%;
+}
+
+.videoFrame .control-wrap .replay:before {
+    /* content: ''; */
+    display: block;
+    height: 66px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #fff;
+    position: absolute;
+    top: -14px;
+    left: -20px;
+    opacity: 0.2;
+}
+
+.videoFrame .r-con .r-box {
+    position: absolute;
+    top: -289px;
+    left: -18px;
+    width: 120px;
+    height: 273px;
+    background: #727581;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 11px 15px;
+}
+
+.videoFrame .r-con .r-box:before {
+    content: '배속 선택';
+    display: block;
+    clear: both;
+    position: absolute;
+    color: #fff;
+    font-size: 22px;
+    width: 94px;
+    padding-bottom: 6px;
+    text-align: center;
+}
+
+.videoFrame .r-con .r-box:after {
+    content: '';
+    display: block;
+    width: 88px;
+    border-top: 1px solid #00002D;
+    border-bottom: 1px solid #FFF;
+    position: absolute;
+    top: 37px;
+    left: 18px;
+    opacity: 0.2;
+}
+
+.markerbox {
+    width: calc(100% - 140px);
+    position: absolute;
+}
+
+.markerbox .marker {
+    background: url(../images/video/marker.png) 0 0 no-repeat;
+    position: absolute;
+    /*    background: blue;*/
+    width: 16px;
+    height: 15px;
+    top: -10px;
+    margin-left: 30px;
+    cursor: pointer;
+}
+
+.videoFrame.fullvideo .replay,
+.videoFrame.fullvideo .time,
+.videoFrame.fullvideo .r-con,
+.videoFrame.fullvideo .s-con {
+    display: none;
+}
+
+.videoFrame.fullvideo .c-con {
+    left: 177px;
+    top: 12px;
+    width: calc(100% - 156px);
+}
+
+/* 탭 */
+.videoFrame:not(.adomode) .tabbox {
+    position: absolute;
+    top: 0;
+    left: -225px;
+}
+
+.videoFrame:not(.adomode) .tabbox .tab {
+    background: #999999;
+    font-size: 36px;
+    border-bottom-left-radius: 40px;
+    border-top-left-radius: 40px;
+    margin-top: 20px;
+    cursor: pointer;
+    position: relative;
+    color: #fff;
+    width: 225px;
+    padding-left: 35px;
+    padding-right: 60px;
+    padding-top: 16px;
+    padding-bottom: 12px;
+    line-height: 52px;
+    min-height: 76px;
+}
+
+.videoFrame:not(.adomode) .tabbox .tab.on {
+    background: #00a99d;
+}
+
+.videoFrame:not(.adomode) .tabbox .tab .rolemode {
+    background: url(../images/video/role.png) 0 0 no-repeat;
+    background-size: 100%;
+    width: 45px;
+    height: 33px;
+    cursor: pointer;
+    top: 25px;
+    left: 170px;
+    position: absolute;
+}
+
+.videoFrame:not(.adomode) .tabbox .tab .rolemode.on {
+    background: url(../images/video/role_on.png) 0 0 no-repeat;
+    background-size: 100%;
+}
+
+/* adomode */
+.videoFrame.adomode {
+    width: 780px;
+    height: 40px;
+    top: 499px;
+    left: 970px;
+}
+
+.videoFrame.adomode .vdo-wrap .play {
+    display: none !important;
+}
+
+.videoFrame.adomode video {
+    display: none;
+}
+
+.videoFrame.adomode .control-wrap .s-con {
+    right: 120px;
+}
+
+.videoFrame.adomode .s-con:before {
+    left: -14px;
+}
+
+.videoFrame.adomode .control-wrap .c-con {
+    width: calc(100% - 439px);
+}
+
+.videoFrame.adomode .control-wrap .s-con .sound {
+    width: 90px;
+}
+
+.videoFrame.adomode .control-wrap .f-con {
+    display: none;
+}
+
+.videoFrame.adomode .control-wrap .r-con {
+    display: none;
+}
+
+/* 탭 */
+.videoFrame.adomode .tabbox {
+    position: absolute;
+    top: -27px;
+    left: -5px;
+    width: 1600px;
+}
+
+.videoFrame.adomode .tabbox .tab {
+    margin-bottom: 36px;
+    letter-spacing: -0.3px;
+    font-size: 50px;
+    text-align: justify;
+    font-family: 'NotoSerifKr-Bold';
+    pointer-events: none;
+}
+
+.videoFrame.adomode .tabbox .tab:first-child {
+    margin-left: 104px;
+}
+
+.videoFrame.adomode .tabbox .tab .btn {
+    display: none;
+}
+
+.videoFrame.adomode .tabbox .tab.on {
+    color: #ff3300;
+}
+
+.videoFrame.adomode .tabbox .tab .rolemode {
+    background: url(../images/video/role.png) 0 0 no-repeat;
+    background-size: 100%;
+    width: 45px;
+    height: 33px;
+    cursor: pointer;
+    top: 25px;
+    left: 170px;
+    position: absolute;
+}
+
+.videoFrame.adomode .tabbox .tab .rolemode.on {
+    background: url(../images/video/role_on.png) 0 0 no-repeat;
+    background-size: 100%;
+}
+
+/* adomode - simple */
+.videoFrame.adomode.simple {
+    width: 151px;
+    height: 40px;
+    top: 499px;
+    left: 970px;
+}
+
+.videoFrame.adomode.simple .control-wrap .replay,
+.videoFrame.adomode.simple .control-wrap .c-con,
+.videoFrame.adomode.simple .control-wrap .progress,
+.videoFrame.adomode.simple .control-wrap .time,
+.videoFrame.adomode.simple .control-wrap .btn script,
+.videoFrame.adomode.simple .control-wrap .r-con,
+.videoFrame.adomode.simple .control-wrap .s-con,
+.videoFrame.adomode.simple .control-wrap .f-con {
+    display: none;
+}
+
+/* adomode - speaker */
+.videoFrame.adomode.speaker {
+    width: 151px;
+    height: 40px;
+    top: 499px;
+    left: 970px;
+}
+
+.videoFrame.adomode.speaker .control-wrap .replay,
+.videoFrame.adomode.speaker .control-wrap .c-con,
+.videoFrame.adomode.speaker .control-wrap .progress,
+.videoFrame.adomode.speaker .control-wrap .time,
+.videoFrame.adomode.speaker .control-wrap .btn script,
+.videoFrame.adomode.speaker .control-wrap .r-con,
+.videoFrame.adomode.speaker .control-wrap .s-con,
+.videoFrame.adomode.speaker .control-wrap .f-con {
+    display: none;
+}
+
+.videoFrame.adomode.speaker .control-wrap {
+    background: transparent;
+    width: 80px;
+    height: 80px;
+}
+
+.videoFrame.adomode.speaker .control-wrap .p-con {
+    left: 0;
+    top: 0;
+}
+
+.videoFrame.adomode.speaker .control-wrap .p-con .pause {
+    display: none !important;
+}
+
+.videoFrame.adomode.speaker .control-wrap .p-con .play {
+    width: 70px;
+    height: 75px;
+    background: url(../images/audio/btnSound_stop.png) 0 0 no-repeat;
+    top: 0;
+    left: 0;
+}
+
+.videoFrame.adomode.speaker .control-wrap .stop {
+    width: 80px;
+    height: 80px;
+    background: url(../images/audio/btnSound_play.png) 0 0 no-repeat;
+    top: 0;
+    left: 0;
+}
+
+.videoFrame.adomode.speaker .control-wrap .stop::before {
+    content: none;
+}
+
+/* player */
+.videoFrame.adomode.player {
+    width: 799px;
+    height: 82px;
+    top: 162px;
+    left: 428px;
+}
+
+.videoFrame.adomode.player .control-wrap {
+    width: 100%;
+    height: 100%;
+    border-radius: 40px;
+}
+
+.videoFrame.adomode.player .control-wrap .p-con {
+    top: 11px;
+    left: 18px;
+}
+
+.videoFrame.adomode.player .control-wrap .stop {
+    top: 16px;
+    left: 95px;
+}
+
+.videoFrame.adomode.player .control-wrap .replay {
+    top: 9px;
+    left: 169px;
+}
+
+.videoFrame.adomode.player .control-wrap .c-con {
+    left: 250px;
+    top: 18px;
+    width: calc(100% - 409px);
+}
+
+.videoFrame.adomode.player .control-wrap .s-con {
+    top: 11px;
+    right: 159px !important;
+}
+
+.videoFrame.adomode.player .control-wrap .s-con .sound {
+    width: 113px;
+    top: 26px;
+    left: 73px;
+}
+
+.videoFrame.adomode.player .control-wrap .c-con:before {
+    content: '';
+    display: block;
+    height: 51px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #fff;
+    position: absolute;
+    top: -2px;
+    left: -11px;
+    opacity: 0.2;
+}
+
+.videoFrame.adomode.player .control-wrap .replay:before {
+    content: '';
+    display: block;
+    height: 51px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #fff;
+    position: absolute;
+    top: 7px;
+    left: -11px;
+    opacity: 0.2;
+}
+
+.videoFrame.adomode.player .control-wrap .stop:before {
+    content: '';
+    display: block;
+    height: 51px;
+    border-left: 1px solid #00002D;
+    border-right: 1px solid #fff;
+    position: absolute;
+    top: -1px;
+    left: -11px;
+    opacity: 0.2;
+}
+
+.videoFrame.adomode.player .control-wrap .c-con .time {
+    display: none;
+}
+
+/* 팝업 */
+.popup .videoFrame {
+    top: 149px;
+    left: 50%;
+    transform: translateX(-50%) scale(1);
+}
+
+/* 인라인 비디오 */
+:root {
+    --word1-w: 162px;
+    --word2-w: 318px;
+    --word3-w: 474px;
+    --word4-w: 630px;
+}
+
+.inVideo {
+    width: var(--word1-w);
+    height: 162px;
+    position: absolute;
+    top: 247px;
+    left: 207px;
+    pointer-events: none;
+}
+
+.inVideo.on {
+    background: transparent;
+}
+
+/*  */
+.btnVideo {
+    width: 71px;
+    height: 75px;
+    background: url(../images/video/btnVideo.png) 0 0 no-repeat;
+    position: absolute;
+    pointer-events: auto;
+    top: -95px;
+    right: 0;
+    display: block !important;
+}
+
+.inVideo .audioFrame.speaker {
+    pointer-events: auto;
+    top: -99px;
+    left: auto;
+    right: -10px;
+}
+
+/*  */
+/* .inVideo>.bg {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform: translate(0, 0) scale(1);
+}
+
+.inVideo.on .bg {
+    background: #000 !important;
+} */
+
+/*  */
+.inVideo .videoFrame {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transform: scale(1);
+    display: block !important;
+    overflow: hidden;
+}
+
+.inVideo .videoFrame .vdo-wrap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(0, 0);
+}
+
+.inVideo :-webkit-full-screen.videoFrame .vdo-wrap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.inVideo :fullscreen.videoFrame .vdo-wrap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/*  */
+.inVideo .videoFrame .vdo-wrap video {
+    width: auto;
+    max-width: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.inVideo :-webkit-full-screen.videoFrame .vdo-wrap video {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.inVideo :fullscreen.videoFrame .vdo-wrap video {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/*  */
+/* .inVideo .videoFrame .vdo-wrap .play {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.inVideo :fullscreen.videoFrame .vdo-wrap .play {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.inVideo :-webkit-full-screen.videoFrame .vdo-wrap .play {
+    top: 50%;
+    transform: translateY(-50%);
+} */
+
+.inVideo .videoFrame .vdo-wrap .play,
+.inVideo .videoFrame .control-wrap {
+    display: none !important;
+}
+
+/*  */
+/* .inVideo .videoFrame.fullvideo {
+    transform: translate(-50%, -50%) scale(0.535);
+    top: 50%;
+    left: 50%;
+    height: 100%;
+    z-index: auto;
+    display: none !important;
+}
+
+.inVideo.on .videoFrame.fullvideo {
+    display: block !important;
+} */
+
+/* ---------------------------------------
+ * 글쓰기
+ * --------------------------------------- */
+/* textarea */
+textarea,
+input {
+    resize: none;
+    background: transparent;
+    outline: none;
+    overflow-y: auto;
+    color: #333;
+    font-family: 'NanumGothicB' !important;
+    font-size: 17px;
+    line-height: 1;
+    overflow-x: hidden;
+}
+
+textarea::-webkit-input-placeholder {
+    color: #ccc;
+}
+
+textarea:-ms-input-placeholder {
+    color: #ccc;
+}
+
+textarea::placeholder {
+    color: #ccc;
+}
+
+/* input */
+input[type=text]::-ms-clear {
+    display: none;
+}
+
+input:focus {
+    outline: none;
+}
+
+input[disabled="true"] {
+    -webkit-text-fill-color: blue;
+    color: blue !important;
+    opacity: 1;
+}
+
+input::-webkit-input-placeholder {
+    color: #ccc;
+}
+
+input:-ms-input-placeholder {
+    color: #ccc;
+}
+
+input::placeholder {
+    color: #ccc;
+}
+
+
+
+/* textContents */
+.textContent {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+/* textWrap */
+.textContent .textWrap {
+    position: absolute;
+    width: 1686px;
+    height: 243px;
+    top: 319px;
+    left: 144px;
+}
+
+.textContent .textWrap textarea {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    /* padding: 0 55px; */
+    background: transparent;
+    border: none;
+    resize: none;
+    font-family: 'KoPubDotum' !important;
+    font-weight: 500;
+    font-size: 60px;
+    text-align: left;
+    line-height: 88px;
+    line-height: 1;
+    padding-left: 29px;
+    color: #000;
+}
+
+.textContent .textWrap .exWrap {
+    /* background: url('../images/09/ex.png') 238px 132px no-repeat; */
+    width: 110%;
+    height: 140%;
+    display: none;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.textContent .textWrap .exWrap .closeBtn {
+    background: url('../images/textitem/exClose.png') 0 0 no-repeat;
+    width: 55px;
+    height: 58px;
+    position: absolute;
+    top: -37px;
+    right: 56px;
+    cursor: pointer;
+}
+
+.textContent .exbtn {
+    /* background: url('../images/clickitem/btn_openEx.png') 0 0 no-repeat; */
+    /* width: 176px; */
+    /* height: 63px; */
+    /* position: absolute; */
+    /* top: 909px; */
+    /* left: 1673px; */
+    /* cursor: pointer; */
+    display: none;
+}
+
+.textContent .exbtn.dis {
+    /* background: url('../images/clickitem/btn_openEx_dis.png') 0 0 no-repeat; */
+    /* pointer-events: auto !important; */
+}
+
+.textContent .exbtn.re {
+    /*  background: url('../images/clickitem/replay.png') 0 0 no-repeat; */
+}
+
+/* inputWrap */
+.textContent .inputWrap {
+    position: absolute;
+    left: 490px;
+    top: 550px;
+    width: 950px;
+    height: 160px;
+}
+
+.textContent .inputWrap input {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    padding: 0 20px;
+    font-size: 60px;
+    line-height: 88px;
+    line-height: 1;
+    color: #000;
+    background: transparent;
+    resize: none;
+    border: none;
+    font-family: 'KoPubDotum' !important;
+    font-weight: 500;
+}
+
+.textContent .inputWrap .exWrap {
+    /* background: url('../images/09/ex.png') 238px 132px no-repeat; */
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.textContent .inputWrap .exWrap .closeBtn {
+    background: url('../images/inputItem/exClose.png') 0 0 no-repeat;
+    width: 55px;
+    height: 58px;
+    position: absolute;
+    top: 44px;
+    right: 62px;
+    cursor: pointer;
+}
+
+/*  */
+.textContent .wrapper .placeholder {
+    background: url('../images/textitem/placeholder.png') 23px 0px no-repeat;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
+.textContent.small .wrapper .placeholder {
+    background: url('../images/textitem/placeholder_s.png') 23px 0px no-repeat;
+}
+.textContent.small .wrapper textarea,
+.textContent.small .wrapper input{
+    font-size: 50px;
+}
+
+/* ---------------------------------------
+ * 캐릭터 음원
+ * --------------------------------------- */
+/* aniWrap */
+.aniWrap {
+    position: relative;
+}
+
+/* aniItem */
+.aniWrap .aniItem {
+    position: absolute;
+    cursor: pointer;
+}
+
+/*  */
+.aniWrap .aniItem .char {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+/*  */
+.aniWrap .aniItem .item {
+    position: absolute;
+    pointer-events: none;
+    display: block !important;
+    opacity: 0;
+}
+
+.aniWrap .aniItem.ing .item {
+    opacity: 1;
+}
+
+/* motion */
+.aniWrap .aniItem .motionWrap .cover {
+    display: block;
+}
+
+.aniWrap .aniItem .motionWrap.on .cover {
+    display: none;
+}
+
+.aniWrap .aniItem .motionWrap .motion {
+    display: none;
+}
+
+.aniWrap .aniItem .motionWrap.on .motion {
+    display: block;
+}
+
+/* soundBtn */
+.aniWrap .soundBtn {
+    position: absolute;
+    width: 233px;
+    height: 71px;
+    top: 932px;
+    right: 20px;
+    cursor: pointer;
+    background: url('../images/clickitem/ansbtn.png') no-repeat;
+    display: none !important;
+}
+
+.aniWrap .soundBtn.re {
+    background: url('../images/clickitem/rebtn.png') no-repeat;
+}
+
+/* ---------------------------------------
+ * 슬라이드 컨텐츠
+ * --------------------------------------- */
+.slideWrap {
+    width: auto;
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.slideWrap .slide {
+    position: absolute;
+    pointer-events: auto;
+    background: #999;
+}
+
+.slideWrap .slide .slideBtn {
+    width: auto;
+    height: auto;
+    position: absolute;
+    cursor: pointer;
+    background: #666;
+}
+
+.slideWrap.top .slide .slideBtn {
+    bottom: 0;
+}
+
+.slideWrap.bottom .slide .slideBtn {
+    top: 0;
+}
+
+.slideWrap.left .slide .slideBtn {
+    right: 0;
+}
+
+.slideWrap.right .slide .slideBtn {
+    left: 0;
+}
+
+/* ---------------------------------------
+ * stamp
+ * --------------------------------------- */
+.stampWrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.stampWrap .stamp {
+    width: 800px;
+    height: 1000px;
+    background: url('../images/motion/stamp_800_22.png') no-repeat;
+    animation: stampAni 2s steps(25);
+    position: absolute;
+    top: -40px;
+    left: 1453px;
+}
+
+.stampWrap .item {
+    width: 390px;
+    height: 390px;
+    position: absolute;
+    top: 574px;
+    left: 1476px;
+    display: none;
+}
+
+.stampWrap .item.st1 {
+    background: url('../images/motion/stamp01.png') center center no-repeat;
+}
+
+.stampWrap .item.st2 {
+    background: url('../images/motion/stamp02.png') center center no-repeat;
+}
+
+.stampWrap .item.st3 {
+    background: url('../images/motion/stamp03.png') center center no-repeat;
+}
+
+.stampWrap .item.st4 {
+    background: url('../images/motion/stamp04.png') center center no-repeat;
+}
+
+.stampWrap .item.st5 {
+    background: url('../images/motion/stamp05.png') center center no-repeat;
+}
+
+.stampWrap .item.st6 {
+    background: url('../images/motion/stamp06.png') center center no-repeat;
+}
+
+.stampWrap .item.st7 {
+    background: url('../images/motion/stamp07.png') center center no-repeat;
+}
+
+.stampWrap .item.st8 {
+    background: url('../images/motion/stamp08.png') center center no-repeat;
+}
+
+@keyframes stampAni {
+    0% {
+        background-position: 0px;
+    }
+
+    100% {
+        background-position: -20000px;
+    }
+}
+
+@keyframes bounce2 {
+    0% {
+        opacity: 0;
+        -webkit-transform: scale3d(0.3, 0.3, 0.3);
+        transform: scale3d(0.3, 0.3, 0.3);
+    }
+
+    60% {
+        -webkit-transform: scale3d(1.03, 1.03, 1.03);
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+
+
+    100% {
+        opacity: 1;
+        -webkit-transform: scale3d(1, 1, 1);
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+.bounce2 {
+    animation-name: bounce2;
+    -webkit-animation-name: bounce2;
+    animation-duration: 1s;
+    -webkit-animation-duration: 1s;
+    animation-fill-mode: both;
+    -webkit-animation-fill-mode: both;
+}
+
+/* ---------------------------------------
+ * 함께읽기
+ * --------------------------------------- */
+.toReadWrap {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.btnToRead {
+    position: absolute;
+    width: 305px;
+    height: 105px;
+    top: 851px;
+    right: 68px;
+    cursor: pointer;
+    /* background: #333; */
+    pointer-events: auto;
+}
+
+.btnToRead.on {
+    background: #fff;
+    pointer-events: none;
+}
+
+.toRead {
+    position: absolute;
+    background: url('../images/motion/toRead1.png') no-repeat;
+    width: 800px;
+    height: 634px;
+    top: 47.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+.toRead.motion {
+    animation: toReadAni1 4s steps(46);
+    animation-fill-mode: both;
+    animation-delay: 1s;
+    transform: rotate(0.001deg) translate(-50%, -50%);
+}
+
+@keyframes toReadAni1 {
+    0% {
+        background-position: 0px;
+    }
+
+    100% {
+        background-position: -36800px;
+    }
+}
+
+/* ---------------------------------------
+ * 링크 버튼
+ * --------------------------------------- */
+.linkContent {
+    position: relative;
+    left: 0px;
+    top: 0px;
+}
+
+.linkContent .linkItem {
+    width: 1770px;
+    height: 270px;
+    position: absolute;
+    left: 79px;
+    top: 300px;
+}
+
+.linkContent .linkItem .linkArea {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    cursor: pointer;
+}
+
+.linkContent .linkItem .linkBtn {
+    background: url(../images/fingeritem/iconfinger_motion.png) 0 0 no-repeat;
+    width: 180px;
+    height: 200px;
+    position: absolute;
+    left: 1036px;
+    top: 182px;
+    cursor: pointer;
+    opacity: 1;
+    animation: iconFlash 1.5s steps(75) infinite;
+    animation-fill-mode: both;
+    transform: rotate(0.001deg) translate(-50%, -50%) scale(0.8);
+    /* animation: none; */
+}
+
+@keyframes iconFlash {
+    0% {
+        background-position: 0px;
+    }
+
+    100% {
+        background-position: -13500px;
+    }
+}
+
+
+/* <img/> Sequence Animation */
+.wrapAni {
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    animation-play-state: running;
+}
+
+.wrapAni>img {
+    left: -10000px;
+    top: 0px;
+    position: absolute;
+    display: none;
+    width: 100%;
+}
+
+.wrapAni>img.show {
+    left: 0px;
+    display: block;
+}
+
+.wrapAni>img.hide {
+    left: -10000px;
+    display: none;
+}
+
+.wrapAni>.wrapLoad {
+    top: 0px !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0.01 !important;
+}
+
+.wrapAni>.wrapLoad>img {
+    position: absolute !important;
+    display: block !important;
+    width: 100px !important;
+    height: 100px !important;
+}
+
+
+/* -------------------------------------------------------------------------------------- */
+/* =========================================================================================
+ * 과목 개별 기능
+ * ====================================================================================== */
+/* ---------------------------------------
+ * 손가락 아이콘 모션
+ * --------------------------------------- */
+.fingerAni {
+    width: 180px;
+    height: 200px;
+    background: url(../images/fingeritem/iconfinger_dot_motion.png) 0 0 no-repeat;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    z-index: 2;
+    animation: fingerAni 1.5s steps(75) infinite;
+    animation-fill-mode: both;
+    transform: rotate(0.001deg) translate(-50%, -50%);
+}
+
+@keyframes fingerAni {
+    0% {
+        background-position: 0px;
+    }
+
+    100% {
+        background-position: -13500px;
+    }
+}
+
+/* ---------------------------------------
+ * 순차 체크리스트
+ * --------------------------------------- */
+.starContent {
+    width: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.starContent .starGroup {
+    position: relative;
+}
+
+.starContent .starGroup::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.starContent .starGroup .star {
+    background: url('../images/clickitem/star.png') 0 0 no-repeat;
+    width: 68px;
+    height: 68px;
+    position: relative;
+    float: left;
+    margin-right: 32px;
+    cursor: pointer;
+}
+
+.starContent .starGroup .star:last-child {
+    margin-right: 0px;
+}
+
+.starContent .starGroup .star.on {
+    background: url('../images/clickitem/star1_on.png') 0 0 no-repeat;
+}
+
+.starContent .starGroup .star:nth-child(2).on {
+    background: url('../images/clickitem/star2_on.png') 0 0 no-repeat;
+}
+
+.starContent .starGroup .star:nth-child(3).on {
+    background: url('../images/clickitem/star3_on.png') 0 0 no-repeat;
+}
+
+/* 좌우로 흔들 */
+@-webkit-keyframes shuffle {
+    0% {
+        transform: rotate(0) translateX(0) scale(1);
+    }
+
+    50% {
+        transform: rotate(5deg) translateX(105%) scale(0.96);
+    }
+
+    100% {
+        transform: rotate(0) translateX(0);
+    }
+}
+
+@keyframes shuffle {
+    0% {
+        transform: rotate(0) translateX(0) scale(1);
+    }
+
+    50% {
+        transform: rotate(5deg) translateX(105%) scale(0.96);
+    }
+
+    100% {
+        transform: rotate(0) translateX(0);
+    }
+}
+
+@-webkit-keyframes shuffleL {
+    0% {
+        transform: rotate(0) translateX(0) scale(1);
+    }
+
+    50% {
+        transform: rotate(-5deg) translateX(-105%) scale(0.96);
+    }
+
+    100% {
+        transform: rotate(0) translateX(0);
+    }
+}
+
+@keyframes shuffleL {
+    0% {
+        transform: rotate(0) translateX(0) scale(1);
+    }
+
+    50% {
+        transform: rotate(-5deg) translateX(-105%) scale(0.96);
+    }
+
+    100% {
+        transform: rotate(0) translateX(0);
+    }
+}
+
+/* =========================================================================================
+ * 기타
+ * ====================================================================================== */
+
+/* ──────────────────────────────────────────────────────
+* Font Preloading
+/* ────────────────────────────────────────────────────── */
+
+#cFontPreload {
+    position: absolute;
+    left: -99999px;
+}
+
+#cFontPreload .dump {
+    position: absolute !important;
+    left: 0px;
+    bottom: 0px;
+    opacity: 0.01 !important;
+    z-index: -999 !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    transform: translateX(-100%) !important;
+
+    /* text-shadow: 1px 1px 10px #ffc107; */
+    /* font-weight: bold; */
+}
+
+/* ---------------------------------------
+ * tester
+ * --------------------------------------- */
+.tt {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* display: none; */
+    opacity: 0.5;
+    pointer-events: none;
+    background-position-x: 0px !important;
+    background-position-y: 0px !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    z-index: 9999;
+}
+
+.version {
+    position: absolute;
+    left: 100px;
+    top: 300px;
+    font-size: 30px;
+    font-weight: bolder;
+    color: #F00;
+    z-index: 9999;
+}
+
+.aniWrap .aniItem .char,
+.aniWrap .aniItem .item,
+.setContent li,
+.btnPop,
+.btnPopup,
+.objWrap .obj,
+.textWrap,
+.textWrap .textarea,
+.clickContent .clickItem,
+.colorPicker ul>li,
+.pageWrap .prev,
+.pageWrap .next,
+.pageWrap .pageing,
+.pageWrap .pageing .dot,
+.pageWrap .closeBtn,
+.btnToRead,
+.placeholder,
+.exWrap,
+.exWrap .closeBtn,
+button,
+input,
+textarea,
+.sliding,
+.test,
+.btn,
+.linkContent .linkItem .linkArea,
+.linkContent .linkItem .linkBtn,
+.introPage .startBtn,
+.dragScroll .jog,
+.scrollbox,
+.scrollbox .scrollpage,
+.dropArea .dropItem,
+.dragArea .dragItem,
+.pop .closeBtn,
+.popup .closeBtn,
+.pop .close,
+.popup .close,
+.hwalbtn,
+.tabWrap .btnTab,
+.starContent .starGroup .star,
+.checkContent .checkItem {
+    /* background-color: rgba(0, 0, 0, 0.5) !important; */
+    /* background-color: rgba(255, 0, 255, 0.5) !important; */
+    /* background-color: rgba(255, 237, 96, 0.5) !important; */
+    /* background-color: rgba(129, 193, 71, 0.5) !important; */
+    /* background-color: rgba(10, 55, 17, 0.5) !important; */
+    /* outline: 1px solid red; */
+}
+
+.test,
+.test1 {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* background-color: rgb(0 0 0 / 0.5); */
+}
+
+.test2 {
+    background-color: rgba(255, 0, 255, 0.3);
+}
+
+
+/* hit영역 확인용 배경 */
+.test2 .setContent li,
+.test2 .contents .btnWrap .btnPop,
+.test2 .contents .clickContent .clickItem,
+.test2 .objWrap .obj,
+.test2 .btnPop,
+.test2 .btnPopup,
+.test2 .solpop .btnClose,
+.test2 .colorPicker ul>li,
+.test2 .gamePage .finger .btnClick,
+.test2 .pageWrap .prev,
+.test2 .pageWrap .next,
+.test2 .pageWrap .pageing,
+.test2 .pageWrap .pageing .dot,
+.test2 .pageWrap .closeBtn,
+.test2 .pop .clickItem,
+.test2 button,
+.test2 input,
+.test2 textarea,
+.test2 .textWrap,
+.test2 .textWrap .textarea,
+.test2 .box,
+.test2 .test,
+.test2 .btn,
+.test2 .ansbtn,
+.test2 .chobtn,
+.test2 .soundBtn,
+.test2 .effBtn,
+.test2 .gameAnsBtn,
+.test2 .gameReBtn,
+.test2 .ani,
+.test2 .aniWrap .aniItem .char,
+.test2 .aniWrap .aniItem .item,
+.test2 .placeholder,
+.test2 .introAni,
+.test2 .contents .btn[data-num],
+.test2 .clickContent .clickItem,
+.test2 .clickContent .clickItem:before,
+.test2 .clickContent .clickItem:after,
+.test2 .clickContent.checkbox .clickItem,
+.test2 .clickContent.checkbox .clickItem:before,
+.test2 .clickContent.checkbox .clickItem:after,
+.test2 .dropArea .dropCode,
+.test2 .dropArea .dropItem,
+.test2 .dropArea .dragItem,
+.test2 .dragArea .dragItem,
+.test2 .btnTabWrap,
+.test2 .btnTabWrap .btnTab,
+.test2 .tabWrap .prev,
+.test2 .tabWrap .next,
+.test2 .tabWrap .pageing,
+.test2 .tabWrap .pageing .dot,
+.test2 .oxQuiz .ox,
+.test2 .quizGroup .bogi li,
+.test2 .btnToRead,
+.test2 .exWrap,
+.test2 .exWrap .closeBtn,
+.test2 .sliding,
+.test2 .linkContent .linkItem .linkArea,
+.test2 .linkContent .linkItem .linkBtn,
+.test2 .introPage .startBtn,
+.test2 .dragScroll .jog,
+.test2 .scrollbox,
+.test2 .scrollbox .scrollpage,
+.test2 .hwalbtn,
+.test2 .tabWrap .btnTab,
+.test2 .popupBtn,
+.test2 .popBtn,
+.test2 .pop,
+.test2 .pop .clickItem,
+.test2 .popup .clickItem,
+.test2 .pop .closeBtn,
+.test2 .popup .closeBtn,
+.test2 .popup .close,
+.test2 .pop .close {
+    /* background-color: rgba(0, 0, 0, 0.5) !important; */
+    /* background-color: rgba(255, 0, 255, 0.5) !important; */
+    /* background-color: rgba(255, 237, 96, 0.5) !important; */
+    /* background-color: rgba(129, 193, 71, 0.5) !important; */
+    /* background-color: rgba(10, 55, 17, 0.5) !important; */
+    outline: 1px solid red !important;
+}
+
+
+.test2 .btnPop,
+.test2 .btnPopup,
+.test2 .aniWrap .btnWrap .play,
+.test2 .aniWrap .btnWrap .stop {
+    color: #000;
+    text-indent: 0px;
+}
+
+#wrap.test2 .setContent li.act,
+#wrap.test2 .setContent li.on,
+.test2 .pageWrap .pageing .dot.on,
+.test2 .btnTabWrap .btnTab.on,
+.test2 .tabWrap .tab_btn.active,
+.test2 .tabWrap .pageing .dot.on {
+    outline: 3px solid green !important;
+}
+
+
+
+.test2 .dragScroll .bar,
+.test2 .dragScroll .jog,
+
+.test2 .scrollbox,
+.test2 .scrollbox .scrollpage,
+.test2 .mCSB_dragger_bar,
+.test2 .mCSB_draggerRail,
+
+.test2 .slideWrap+.slideBtnArrow,
+.test2 .zoomWrap,
+.test2 .zoomWrap .zoombtn,
+.test2 .zoomWrap .zoombtn div,
+.test2 .zoomWrap .zoombox,
+.test2 .zoomWrap .zoombox *,
+
+.test2 .textContent *,
+
+.test2 .aniItem,
+.test2 .aniItem *,
+
+.test2 .stampWrap *,
+
+.test2 .slideWrap,
+.test2 .slideWrap *,
+
+.test2 .toReadWrap *,
+
+.test2 .linkItemWrap *,
+
+.test2 .videoFrame .control-wrap *,
+.test2 .videoFrame .control-wrap .c-con .progress span:before,
+.test2 .videoFrame .control-wrap .s-con .sound span:before,
+.test2 .videoFrame .tabbox .tab,
+.test2 .videoFrame.adomode .tabbox,
+.test2 .videoFrame.adomode .tabbox .tab,
+
+
+.test2 .lineWrap .dot {
+    outline: 1px solid red !important;
+}
+
+.test2 .lineWrap svg {
+    background: rgba(0, 0, 0, 0.2) 0 0 no-repeat;
+    outline: 1px solid black;
+}
+
+.test2 canvas {
+    outline: 1px solid black;
+}
+
+/*  */
+.test2 .dragContents .dragItem.match {
+    visibility: visible !important;
+    opacity: 0.3 !important;
+}
+
+/* .dragItem data-idx */
+.test2 .dragContents .dragItem::before {
+    background: rgba(0, 0, 0, 0.5) 0 0 no-repeat;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    content: attr(data-idx);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    line-height: 20px;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* .dropItem data-idx */
+.test2 .dragContents .dropItem::before {
+    background: rgba(200, 200, 200, 0.5) 0 0 no-repeat;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    content: attr(data-idx);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    font-size: 20px;
+    line-height: 20px;
+    color: #000;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* .dragItem data-drop : 드롭된 dropItem의 data-idx */
+.test2 .dragContents .dragItem::after {
+    background: rgba(0, 0, 0, 0.5) 0 0 no-repeat;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    content: attr(data-drop);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: 1px dotted #f00;
+    outline-offset: 1px;
+    font-size: 20px;
+    line-height: 20px;
+    color: #f00;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+/* .dropItem data-drag : 드롭된 dragItem의 data-idx */
+.test2 .dragContents .dropItem::after {
+    background: rgba(200, 200, 200, 0.5) 0 0 no-repeat;
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    content: attr(data-drag);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: 1px dotted #f00;
+    outline-offset: 1px;
+    z-index: 1;
+    font-size: 20px;
+    line-height: 20px;
+    color: #f0f;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+
+/* ---------------------------------------
+ * custom
+ * --------------------------------------- */
+/* position */
+.posr {
+    position: relative;
+}
+
+.posa {
+    position: absolute;
+}
+
+/* display */
+.blk {
+    display: block !important;
+}
+
+.none {
+    display: none !important;
+}
+
+/* tir */
+.tir {
+    text-indent: 0px;
+    position: absolute;
+    top: 0px;
+}
+
+.tir.off {
+    text-indent: -9999px;
+    position: absolute;
+    top: -999px;
+}
+
+/* clear */
+.clear:after {
+    content: '';
+    clear: both;
+    display: block;
+}
+
+/* event */
+.dis,
+.evtN,
+.aEvtN,
+.aEvtN * {
+    pointer-events: none !important;
+}
+
+/* align */
+.center {
+    text-align: center;
+}
+
+/* radius */
+.circle {
+    border-radius: 50%;
+}
+
+/* videoFrame hls */
+.levelbuttons {
+    display: none;
+}
+
+.hls .levelbuttons {
+    position: absolute;
+    top: 8px;
+    right: 65px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    background: #6f7278;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    width: 120px;
+}
+
+.hls .levelbuttons button {
+    width: 94px;
+    height: 28px;
+    cursor: pointer;
+    box-sizing: content-box;
+    border-radius: 20px;
+    color: #4D4D4D;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 30px;
+    background: rgb(203, 203, 203);
+    position: relative;
+    margin-top: 10px;
+    margin-left: 2px;
+    display: none;
+    white-space: nowrap;
+}
+
+.hls .levelbuttons button.on {
+    background: #9BE8CA;
+    display: block;
+    font-size: 18px;
+}
+
+.hls .levelbuttons button span {
+    color: #666;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.hls .levelbuttons.open {
+    top: -188px;
+    padding-top: 14px;
+}
+
+.hls .levelbuttons.open div {
+    font-size: 22px;
+    color: #fff;
+    letter-spacing: -1px;
+}
+
+.hls .levelbuttons.open button {
+    display: block;
+}
+
+.hls.videoFrame .control-wrap .p-con {
+    left: 10px;
+}
+
+.hls.videoFrame .control-wrap .stop {
+    left: 85px;
+}
+
+.hls.videoFrame .control-wrap .replay {
+    left: 145px;
+}
+
+.hls.videoFrame .control-wrap .c-con {
+    left: 210px;
+    width: calc(100% - 720px);
+}
+
+.hls.videoFrame .control-wrap .c-con:before {
+    left: -4px;
+    display: none;
+}
+
+.hls.videoFrame .r-con {
+    right: 470px;
+}
+
+.hls.videoFrame .r-con:before {
+    left: -10px;
+    display: none;
+}
+
+.hls.videoFrame .control-wrap .s-con {
+    right: 320px;
+}
+
+.hls.videoFrame .control-wrap .s-con::before {
+    display: none;
+}
+
+.hls.videoFrame .control-wrap .f-con {
+    right: 5px;
+}
+
+.hls.videoFrame .control-wrap .f-con:before {
+    border: 0;
+}
