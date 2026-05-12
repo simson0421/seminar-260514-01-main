@@ -142,13 +142,23 @@ function contentScript(_idx, _content) {
             /**
              * 애니메이션 실행
              */
+            /**
+             * 계산된 경로를 순차적으로 애니메이션하며 그리기
+             */
             async function animatePath(playerIdx, path, color) {
                 for (let i = 0; i < path.length - 1; i++) {
                     await moveSegment(playerIdx, path[i], path[i + 1], color);
                 }
                 drawnPaths.push({ path, color });
-                // 완료 후 결과 처리 (예: conSet1... 등 외부 코드 연동)
-                if (window.conSet1) conSet1.clickCon.items.eq(playerIdx).show();
+
+                // --- 추가된 코드 ---
+                // path의 마지막 좌표를 기준으로 현재 기둥 인덱스를 계산합니다.
+                const finalX = path[path.length - 1].x;
+                const arrivalIdx = (finalX - ladder.config.padding) / ladder.config.colWidth;
+                console.log(`[결과] ${playerIdx + 1}번 플레이어 -> ${arrivalIdx + 1}번 기둥 도착 (Index: ${arrivalIdx})`);
+                // ------------------
+
+                conSet1.clickCon.items.eq(playerIdx).show();
             }
 
             /**
@@ -226,14 +236,25 @@ function contentScript(_idx, _content) {
             $('.ansbtn').on('click', function () {
                 let $ts = $(this);
                 if ($ts.hasClass('re')) {
-                    $ts.removeClass('re');
-                    ladder.init(); 
+                    // ... (다시하기 로직)
                 } else {
                     $ts.addClass('re');
+                    conSet1.clickCon.items.addClass('on');
                     drawnPaths = [];
+                    
+                    console.log('--- 전체 결과 목록 ---');
                     for (let i = 0; i < ladder.playerCount; i++) {
-                        drawnPaths.push({ path: getPath(i), color: ladder.config.colors[i % ladder.config.colors.length] });
+                        const path = getPath(i);
+                        const color = ladder.config.colors[i % ladder.config.colors.length];
+                        drawnPaths.push({ path, color });
+
+                        // --- 추가된 코드 ---
+                        const finalX = path[path.length - 1].x;
+                        const arrivalIdx = (finalX - ladder.config.padding) / ladder.config.colWidth;
+                        console.log(`플레이어 ${i + 1} : 기둥 ${arrivalIdx + 1} 도착`);
+                        // ------------------
                     }
+                    
                     Object.values(activeAnimations).forEach(id => cancelAnimationFrame(id));
                     activeAnimations = {};
                     refreshCanvas();
