@@ -21,16 +21,15 @@
         <div class="contentsWrap">
             <div class="contents clickPage clickPage1">
                 <div class="game-container">
-                    <h2>나만의 사다리 타기</h2>
-                    <div class="controls">
-                        <label>참여 인원: <input type="number" id="playerCount" value="4" min="2" max="10"></label>
-                        <button id="resetBtn">초기화</button>
-                        <button id="startBtn">결과 보기</button>
-                    </div>
+                    <h2>사다리 타기: 선택하면 시작!</h2>
+                    <div id="playerButtons" class="player-buttons">
+                        </div>
                     <div class="canvas-wrapper">
                         <canvas id="ladderCanvas"></canvas>
                     </div>
-                    <p class="hint">세로선 사이를 클릭하여 가로 다리를 직접 놓아보세요!</p>
+                    <div>
+                        <button onclick="location.reload()">다시 하기</button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -13,42 +13,31 @@
 }
 
 /* contents:nth-child(1) -------------------------------------------------------------*/
-.game-container {
-    text-align: center;
-    font-family: sans-serif;
-    padding: 20px;
+.player-buttons {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
 }
 
-.canvas-wrapper {
-    position: relative;
-    display: inline-block;
-    margin-top: 20px;
+.p-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #333;
+    background: #fff;
+    cursor: pointer;
+    margin: 0 30px;
+    /* 간격은 JS에서 조정 */
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.p-btn:hover {
+    background: #4A90E2;
+    color: white;
 }
 
 canvas {
-    border: 2px solid #333;
-    background: #f9f9f9;
-    cursor: crosshair;
-}
-
-.controls {
-    margin-bottom: 15px;
-}
-
-.hint {
-    color: #666;
-    font-size: 0.9em;
-}
-
-button {
-    padding: 8px 15px;
-    cursor: pointer;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-}
-
-button:hover {
-    background: #45a049;
+    background: #fdfdfd;
+    border-top: 5px solid #333;
 }

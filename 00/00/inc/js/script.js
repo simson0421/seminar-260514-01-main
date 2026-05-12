@@ -7,94 +7,112 @@ function contentScript(_idx, _content) {
             const canvas = document.getElementById('ladderCanvas');
             const ctx = canvas.getContext('2d');
             
-            let playerCount = 4;
-            let horizontalLines = []; // 가로선 데이터 저장
+            // --- [사용자 설정 데이터] ---
+            const playerCount = 5;
+            const ladderData = [
+                { section: 0, height: 0.2 },
+                { section: 1, height: 0.3 },
+                { section: 2, height: 0.5 },
+                { section: 3, height: 0.15 },
+                { section: 0, height: 0.6 },
+                { section: 2, height: 0.8 },
+                { section: 3, height: 0.7 }
+            ];
+
             const padding = 50;
-            const speed = 5; // 애니메이션 속도
+            const colWidth = 100;
+            const canvasHeight = 600;
+            const innerHeight = canvasHeight - (padding * 2);
+            
+            canvas.width = (playerCount - 1) * colWidth + padding * 2;
+            canvas.height = canvasHeight;
 
-            function init() {
-                playerCount = parseInt($('#playerCount').val());
-                canvas.width = (playerCount - 1) * 100 + padding * 2;
-                canvas.height = 500;
-                horizontalLines = [];
-                drawBoard();
-            }
-
-            // 기본 세로선 그리기
+            // 기본 사다리판 그리기
             function drawBoard() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 4;
-                ctx.lineCap = 'round';
-
+                ctx.strokeStyle = '#ddd'; // 기본 선은 연하게
+                ctx.lineWidth = 2;
                 for (let i = 0; i < playerCount; i++) {
-                    const x = padding + i * 100;
-                    ctx.beginPath();
-                    ctx.moveTo(x, padding);
-                    ctx.lineTo(x, canvas.height - padding);
-                    ctx.stroke();
+                    const x = padding + i * colWidth;
+                    ctx.beginPath(); ctx.moveTo(x, padding); ctx.lineTo(x, canvas.height - padding); ctx.stroke();
                 }
-                
-                // 저장된 가로선들 다시 그리기
-                horizontalLines.forEach(line => {
-                    drawHorizontalLine(line.x, line.y);
+                ladderData.forEach(line => {
+                    const x = padding + (line.section * colWidth);
+                    const y = padding + (line.height * innerHeight);
+                    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + colWidth, y); ctx.stroke();
                 });
             }
 
-            // 가로선 그리기 함수
-            function drawHorizontalLine(x, y) {
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineTo(x + 100, y);
-                ctx.stroke();
+            // 상단 버튼 생성
+            for(let i=0; i<playerCount; i++) {
+                $('<button>').addClass('p-btn').text(i+1)
+                    .css('margin', `0 ${colWidth/2 - 20}px`)
+                    .on('click', () => startLadder(i))
+                    .appendTo('#playerButtons');
             }
 
-            // 클릭 시 가로선 추가 (자연스러운 애니메이션)
-            $(canvas).on('click', function(e) {
-                const rect = canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                // 어느 세로선 사이인지 계산
-                const lineIndex = Math.floor((mouseX - padding) / 100);
+            // 경로 추적 로직
+            async function startLadder(startIdx) {
+                let curIdx = startIdx;
+                let curY = padding;
                 
-                if (lineIndex >= 0 && lineIndex < playerCount - 1) {
-                    const startX = padding + lineIndex * 100;
-                    const targetY = mouseY;
+                ctx.strokeStyle = '#FF5722'; // 진행 경로 색상
+                ctx.lineWidth = 5;
 
-                    // 중복 클릭 방지 및 데이터 저장
-                    horizontalLines.push({x: startX, y: targetY, section: lineIndex});
-                    animateLine(startX, targetY);
-                }
-            });
+                // 높이순으로 정렬된 가로선 데이터
+                const sortedLines = [...ladderData].sort((a, b) => a.height - b.height);
 
-            // 선이 쭉 그어지는 애니메이션
-            function animateLine(startX, y) {
-                let currentX = startX;
-                const endX = startX + 100;
+                while (curY < canvasHeight - padding) {
+                    // 현재 위치보다 아래에 있는 가로선 중 가장 가까운 선 찾기
+                    const nextBridge = sortedLines.find(line => 
+                        line.height * innerHeight + padding > curY + 1 && 
+                        (line.section === curIdx || line.section === curIdx - 1)
+                    );
 
-                function step() {
-                    if (currentX < endX) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = '#FF5722'; // 그려질 때 강조색
-                        ctx.moveTo(currentX, y);
-                        currentX += speed;
-                        ctx.lineTo(currentX, y);
-                        ctx.stroke();
-                        requestAnimationFrame(step);
+                    if (nextBridge) {
+                        const bridgeY = nextBridge.height * innerHeight + padding;
+                        // 1. 세로로 이동
+                        await animate(curIdx * colWidth + padding, curY, curIdx * colWidth + padding, bridgeY);
+                        curY = bridgeY;
+
+                        // 2. 가로로 이동
+                        const nextX = (nextBridge.section === curIdx) 
+                                    ? (curIdx + 1) * colWidth + padding 
+                                    : (curIdx - 1) * colWidth + padding;
+                        await animate(curIdx * colWidth + padding, curY, nextX, curY);
+                        curIdx = (nextBridge.section === curIdx) ? curIdx + 1 : curIdx - 1;
                     } else {
-                        drawBoard(); // 최종적으로 검은색 고정
+                        // 더 이상 가로선이 없으면 바닥까지 이동
+                        await animate(curIdx * colWidth + padding, curY, curIdx * colWidth + padding, canvasHeight - padding);
+                        curY = canvasHeight - padding;
                     }
                 }
-                step();
+                alert(`${startIdx + 1}번 참여자 도착!`);
             }
 
-            $('#resetBtn').click(init);
-            $('#playerCount').change(init);
-            
-            init();
+            // 선 그리기 애니메이션 함수 (Promise 활용)
+            function animate(x1, y1, x2, y2) {
+                return new Promise(resolve => {
+                    let curX = x1, curY = y1;
+                    const step = () => {
+                        ctx.beginPath();
+                        ctx.moveTo(curX, curY);
+                        if (x1 !== x2) curX += (x2 > x1 ? 5 : -5);
+                        if (y1 !== y2) curY += 5;
+                        ctx.lineTo(curX, curY);
+                        ctx.stroke();
+
+                        if ((x1 !== x2 && Math.abs(curX - x2) < 5) || (y1 !== y2 && Math.abs(curY - y2) < 5)) {
+                            ctx.lineTo(x2, y2); ctx.stroke(); // 끝점 보정
+                            resolve();
+                        } else {
+                            requestAnimationFrame(step);
+                        }
+                    };
+                    step();
+                });
+            }
+
+            drawBoard();
             break;
     }
 }
