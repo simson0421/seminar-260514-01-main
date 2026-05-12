@@ -11,4 +11,37 @@
 .contents:nth-child(1) {
     /* background: url('../images/00/bg1.png') center bottom no-repeat; */
 }
+
 /* contents:nth-child(1) -------------------------------------------------------------*/
+.game-container {
+    text-align: center;
+    font-family: sans-serif;
+}
+
+#ladderBoard {
+    position: relative;
+    margin: 20px auto;
+    border: 2px solid #333;
+    background: #f9f9f9;
+}
+
+canvas {
+    display: block;
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 5px;
+    width: 50px;
+}
+
+button {
+    padding: 5px 15px;
+    cursor: pointer;
+    background: #4CAF50;
+    color: white;
+    border: none;
+}
