@@ -980,7 +980,7 @@ function imgPreLoad(paSelector, pbDirect) {
 // 공통이미지들중 깜빡임 방지
 imgPreLoad([
     '../../common/images/clickitem/ansbtn.png',         // 정답보기
-    '../../common/images/clickitem/ansbtn2.png',        // 확인하기
+    // '../../common/images/clickitem/ansbtn2.png',        // 확인하기
     '../../common/images/clickitem/rebtn.png'           // 다시하기
 ], true);
 
@@ -1463,10 +1463,10 @@ function toggleAdo(effect) {
 // 공통 audio preload
 audioPreLoad(
     [
-        `${COMM_PATH}media/mp3/anschk_o`,
-        `${COMM_PATH}media/mp3/anschk_x`,
+        // `${COMM_PATH}media/mp3/anschk_o`,
+        // `${COMM_PATH}media/mp3/anschk_x`,
         `${COMM_PATH}media/mp3/click`,
-        `${COMM_PATH}media/mp3/empty`,
+        // `${COMM_PATH}media/mp3/empty`,
     ],
 
     function () {
@@ -1592,9 +1592,9 @@ var AudioSimpleContents = function AudioSimpleContents(wrap, src, psType) {
 // loadScriptFile('../../common/js/jquery.ui.drag.js', function (){});
 // loadScriptFile('../../common/js/jquery.ui.touch-punch.min.js', function (){});
 // loadScriptFile('../../common/js/jquery.mCustomScrollbar.js', function (){});
-loadScriptFile('../../common/js/dragContents.js', function () { });
-loadScriptFile('../../common/js/scrollContents.js', function () { });
-loadScriptFile('../../common/js/lineContents.js', function () { });
+// loadScriptFile('../../common/js/dragContents.js', function () { });
+// loadScriptFile('../../common/js/scrollContents.js', function () { });
+// loadScriptFile('../../common/js/lineContents.js', function () { });
 /**
  * 컨텐츠 관련
  * @param {*} wrap 컨텐츠가 만들어질 요소
