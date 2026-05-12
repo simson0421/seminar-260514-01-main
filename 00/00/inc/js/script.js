@@ -20,6 +20,8 @@ function contentScript(_idx, _content) {
             const canvasHeight = 600;
             const innerHeight = canvasHeight - (padding * 2);
             const colors = ['#E91E63', '#9C27B0', '#2196F3', '#4CAF50', '#FFC107'];
+            
+            let activeAnimation = null; // 현재 진행 중인 애니메이션 제어용
 
             canvas.width = (playerCount - 1) * colWidth + padding * 2;
             canvas.height = canvasHeight;
@@ -28,10 +30,10 @@ function contentScript(_idx, _content) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
-
-                // 1. 기본 배경 사다리 (가장 뒤)
                 ctx.strokeStyle = '#eee';
                 ctx.lineWidth = 2;
+
+                // 배경 사다리 그리기
                 for (let i = 0; i < playerCount; i++) {
                     const x = padding + i * colWidth;
                     ctx.beginPath(); ctx.moveTo(x, padding); ctx.lineTo(x, canvas.height - padding); ctx.stroke();
@@ -43,7 +45,7 @@ function contentScript(_idx, _content) {
                 });
             }
 
-            // 경로 계산 함수 (좌표 배열 반환)
+            // 경로 데이터 추출 (좌표 리스트)
             function getPath(startIdx) {
                 let curIdx = startIdx;
                 let curY = padding;
@@ -70,46 +72,81 @@ function contentScript(_idx, _content) {
                 return path;
             }
 
-            // 경로 그리기 (z-index 효과를 위해 두께와 스타일 조절)
-            function drawPathLine(path, color, isHighlight = false) {
+            // [애니메이션] 개별 경로 그리기
+            async function animatePath(path, color) {
+                if (activeAnimation) cancelAnimationFrame(activeAnimation);
+                
+                for (let i = 0; i < path.length - 1; i++) {
+                    await moveSegment(path[i], path[i+1], color);
+                }
+            }
+
+            function moveSegment(start, end, color) {
+                return new Promise(resolve => {
+                    let curX = start.x;
+                    let curY = start.y;
+                    const speed = 10;
+
+                    const step = () => {
+                        ctx.beginPath();
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 6;
+                        ctx.moveTo(curX, curY);
+
+                        if (start.x !== end.x) curX += (end.x > start.x ? speed : -speed);
+                        if (start.y !== end.y) curY += speed;
+
+                        ctx.lineTo(curX, curY);
+                        ctx.stroke();
+
+                        if (Math.abs(curX - end.x) < speed && Math.abs(curY - end.y) < speed) {
+                            ctx.lineTo(end.x, end.y); ctx.stroke();
+                            resolve();
+                        } else {
+                            activeAnimation = requestAnimationFrame(step);
+                        }
+                    };
+                    step();
+                });
+            }
+
+            // [즉시] 경로 그리기
+            function drawPathInstant(path, color) {
                 ctx.beginPath();
                 ctx.strokeStyle = color;
-                ctx.lineWidth = isHighlight ? 6 : 4; // 강조된 선은 더 굵게
+                ctx.lineWidth = 4;
                 ctx.moveTo(path[0].x, path[0].y);
                 path.forEach(pt => ctx.lineTo(pt.x, pt.y));
                 ctx.stroke();
             }
 
-            // 개별 선택 버튼 생성
+            // 개별 버튼 이벤트
             const $btnWrapper = $('#playerButtons').empty();
             for(let i=0; i<playerCount; i++) {
                 $('<button>').addClass('p-btn').text(i+1)
                     .on('click', function() {
                         $('.p-btn').removeClass('active');
                         $(this).addClass('active');
-                        drawBoard();
-                        const path = getPath(i);
-                        drawPathLine(path, colors[i % colors.length], true);
+                        drawBoard(); // 캔버스 초기화 후 애니메이션 시작
+                        animatePath(getPath(i), colors[i % colors.length]);
                     })
                     .appendTo($btnWrapper);
             }
 
-            // [토글 버튼] 이벤트
+            // 토글 버튼 이벤트
             $('#toggleBtn').on('click', function() {
                 const status = $(this).data('status');
-
                 if (status === 'ready') {
-                    // 즉시 전체 결과 보여주기
                     $(this).text('다시 하기').data('status', 'reset');
                     drawBoard();
-                    // 순서대로 그려서 나중에 그린 선이 위로 오게 함 (z-index 효과)
+                    // 전체 확인은 "즉시" 그리기 (z-index 순서대로)
                     for (let i = 0; i < playerCount; i++) {
-                        drawPathLine(getPath(i), colors[i % colors.length] + 'CC'); 
+                        drawPathInstant(getPath(i), colors[i % colors.length] + 'CC');
                     }
                 } else {
-                    // 초기화
                     $(this).text('전체 결과 확인').data('status', 'ready');
                     $('.p-btn').removeClass('active');
+                    if (activeAnimation) cancelAnimationFrame(activeAnimation);
                     drawBoard();
                 }
             });
